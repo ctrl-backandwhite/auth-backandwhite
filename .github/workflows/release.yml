@@ -1,0 +1,45 @@
+name: Release Creation
+
+on:
+  push:
+    branches:
+      - main # Se activa cuando hay un push o merge a main
+
+permissions:
+  contents: write # Permiso necesario para crear la Tag y el Release
+
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Necesario para que las acciones posteriores puedan escribir (crear tag/release)
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Project Version from pom.xml
+        id: version_extractor
+        run: |
+          # Usa 'grep' y 'sed' para extraer el valor de <version> sin tags XML
+          VERSION=$(grep -m 1 '<version>' pom.xml | sed 's/.*<version>//;s/<\/version>.*//' | sed 's/-SNAPSHOT//')
+          
+          # La etiqueta de Git usará un prefijo 'v' (ej: v1.0.0)
+          TAG_NAME="v$VERSION"
+          
+          echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          
+          echo "::notice title=Version Extracted::Tag a crear: $TAG_NAME"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.version_extractor.outputs.tag }}
+          name: Release ${{ steps.version_extractor.outputs.version }}
+          # Genera automáticamente notas del release basadas en el historial de commits
+          generate_release_notes: true
+          # Marcar como 'latest release'
+          prerelease: false
