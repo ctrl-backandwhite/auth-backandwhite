@@ -47,7 +47,7 @@ public class UserRepositoryAdapterImpl implements UserRepository {
         UserEntity userEntity = userJpaRepositoryAdapter.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
                         ENTITY_NOT_FOUND.getCode(),
-                        String.format(ENTITY_NOT_FOUND.getMesssage(), id)));
+                        String.format(ENTITY_NOT_FOUND.getMessage(), id)));
         return USER_ENTITY_MAPPER.toDomain(userEntity);
     }
 

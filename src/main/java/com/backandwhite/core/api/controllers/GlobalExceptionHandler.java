@@ -1,6 +1,7 @@
 package com.backandwhite.core.api.controllers;
 
 import com.backandwhite.core.api.dtos.out.ErrorResponse;
+import com.backandwhite.core.domain.exception.BadRequestException;
 import com.backandwhite.core.domain.exception.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.core.PropertyReferenceException;
@@ -123,5 +124,15 @@ public class GlobalExceptionHandler {
                 .details(ex.getDetails().isEmpty() ? List.of(): ex.getDetails())
                 .timeStamp(ZonedDateTime.now())
                 .build(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException ex) {
+        return new ResponseEntity<>(ErrorResponse.builder()
+                .code(ex.getCode())
+                .message(ex.getMessage())
+                .details(ex.getDetails().isEmpty() ? List.of(): ex.getDetails())
+                .timeStamp(ZonedDateTime.now())
+                .build(), HttpStatus.BAD_REQUEST);
     }
 }
