@@ -1,4 +1,6 @@
 spring:
+  main:
+    locale: en
   application:
     name: auth-backandwhite
   profiles:
