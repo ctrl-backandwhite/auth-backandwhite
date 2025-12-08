@@ -33,7 +33,7 @@ jobs:
           echo "::notice title=Version Extracted::Tag a crear: $TAG_NAME"
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@a2ee1a4731362e49c70c1735a2a91f5e8e84a229 # SHA del commit
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
