@@ -38,14 +38,14 @@ jobs:
       - name: Pre-build Maven Dependencies (Troubleshooting)
         run: mvn dependency:tree -DoutputType=dot --batch-mode
 
-      # 🚨 PASO DE AUTENTICACIÓN: Usamos el token aquí para la configuración de la CLI.
-      - name: Set up Snyk CLI and Authenticate
+      # 🚨 PASO 1: Configurar Snyk CLI
+      - name: Set up Snyk CLI
         uses: snyk/actions/setup@806182742461562b67788a64410098c9d9b96adb
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }} # El secreto debe ser válido y tener acceso
-        # Además de la configuración, aseguremos que el token se pase a la CLI inmediatamente
-        with:
-          snyk-token: ${{ secrets.SNYK_TOKEN }}
+
+      # 🚨 PASO 2: Autenticación Explícita
+      # Esto fuerza a la CLI a usar el token antes de escanear.
+      - name: Snyk Explicit Authentication
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
 
       # 1. Snyk Code
       - name: Snyk Code test and generate SARIF
@@ -66,6 +66,7 @@ jobs:
       # 4. Snyk Container (Descomentado cuando sea necesario)
       # - name: Build a Docker image
       #   run: docker build -t your/image-to-test .
+
       # - name: Snyk Container monitor
       #   run: snyk container monitor your/image-to-test --file=Dockerfile
 
