@@ -5,11 +5,10 @@ on:
     branches: ["main", "develop"]
   pull_request:
     branches: ["main", "develop"]
-    types: [opened, synchronize, reopened] # Eventos explícitos para PR
+    types: [opened, synchronize, reopened]
 
 permissions:
   contents: read
-  # Permiso clave para escribir los resultados del escaneo en GitHub Code Scanning
   security-events: write
 
 jobs:
@@ -23,60 +22,49 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      ## 🧱 Configuración del Entorno Java/Maven
-      # Necesario para que Snyk pueda analizar las dependencias de pom.xml
+      # Configuración del Entorno Java/Maven
       - name: Set up Java for Maven
         uses: actions/setup-java@v4
         with:
-          java-version: '21' # Asegúrate de que esta versión coincida con tu proyecto
+          java-version: '21'
           distribution: 'temurin'
-          cache: 'maven' # Habilita el caché de Maven
+          cache: 'maven'
 
-      # 🛠️ Instalación de Dependencias
-      # Ejecutar la instalación antes de Snyk ayuda a resolver problemas de permisos y garantiza
-      # que el árbol de dependencias esté listo (soluciona el error de exit code -13).
+      # Instalación de Dependencias
       - name: Install Maven Dependencies and Build
         run: mvn install -DskipTests --batch-mode
 
-      ## 🛡️ Configuración de Snyk
+      # Configuración de Snyk
       - name: Set up Snyk CLI
         uses: snyk/actions/setup@806182742461562b67788a64410098c9d9b96adb
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-      ---
-
-      ## 🔍 Escaneos y Monitoreo
+      # Escaneos y Monitoreo
 
       # 1. Snyk Code (Análisis de Código Estático)
       - name: Snyk Code test and generate SARIF
         run: snyk code test --sarif > snyk-code.sarif
-        # Permite la continuidad del flujo de trabajo para cargar el SARIF
         continue-on-error: true
 
       # 2. Snyk Open Source (Vulnerabilidades en Dependencias)
       - name: Snyk Open Source monitor
-        # El 'monitor' envía resultados a la plataforma Snyk
         run: snyk monitor --all-projects
 
       # 3. Snyk IaC (Infraestructura como Código)
       - name: Snyk IaC test and report
         run: snyk iac test --report
-        # Permite la continuidad para cargar el SARIF (si Snyk IaC lo genera)
         continue-on-error: true
 
       # 4. Snyk Container (Escaneo de Imagen Docker)
-      #- name: Build a Docker image
-      #  run: docker build -t your/image-to-test . # Asegúrate de que la ruta sea correcta
+      - name: Build a Docker image
+        # Asegúrate de que la ruta sea correcta si el Dockerfile no está en la raíz
+        run: docker build -t your/image-to-test .
 
       - name: Snyk Container monitor
         run: snyk container monitor your/image-to-test --file=Dockerfile
 
-      ---
-
-      ## 📤 Carga de Resultados
-
-      # Carga el archivo SARIF generado por Snyk Code a GitHub Code Scanning
+      # Carga de Resultados
       - name: Upload Snyk results to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v3
         with:
