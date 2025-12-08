@@ -22,10 +22,8 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # 🚨 PASO CLAVE AÑADIDO: Dar permisos de ejecución al Maven Wrapper (mvnw)
-      # Esto resuelve el 'exit code -13' si Snyk intenta usar mvnw y no tiene permisos.
+      # Dar permisos de ejecución al Maven Wrapper (mvnw)
       - name: Set Execution Permissions for Maven Wrapper (mvnw)
-        # Solo lo ejecutamos si el archivo existe
         run: if [ -f mvnw ]; then chmod +x mvnw; fi
 
       # Configuración del Entorno Java/Maven
@@ -36,15 +34,18 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      # Pre-construcción de Dependencias (Sigue siendo útil para verificar el entorno)
+      # Pre-construcción de Dependencias
       - name: Pre-build Maven Dependencies (Troubleshooting)
         run: mvn dependency:tree -DoutputType=dot --batch-mode
 
-      # Configuración de Snyk
-      - name: Set up Snyk CLI
+      # 🚨 PASO DE AUTENTICACIÓN: Usamos el token aquí para la configuración de la CLI.
+      - name: Set up Snyk CLI and Authenticate
         uses: snyk/actions/setup@806182742461562b67788a64410098c9d9b96adb
         env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }} # El secreto debe ser válido y tener acceso
+        # Además de la configuración, aseguremos que el token se pase a la CLI inmediatamente
+        with:
+          snyk-token: ${{ secrets.SNYK_TOKEN }}
 
       # 1. Snyk Code
       - name: Snyk Code test and generate SARIF
@@ -54,7 +55,7 @@ jobs:
       # 2. Snyk Open Source (Monitorea dependencias)
       - name: Snyk Open Source monitor
         run: snyk monitor --all-projects
-        working-directory: ./ # Asegura el contexto de ejecución
+        working-directory: ./
 
       # 3. Snyk IaC
       - name: Snyk IaC test and report
