@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Create Pull Request from main to develop
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@c4be6727221650fd0d048d88e08d6d56d14902c5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: 'SYNC: Sincronizar nueva versión de main a develop'
