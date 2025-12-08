@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 @AllArgsConstructor
 public class User {
 
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[\\w.-]+@([\\w-]+\\.)+[\\w-]{2,4}$");
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^\\S+@\\S+\\.\\S+$");
     private static final Pattern PHONE_PATTERN = Pattern.compile("\\+?[0-9]{10,15}");
 
     private Long id;
