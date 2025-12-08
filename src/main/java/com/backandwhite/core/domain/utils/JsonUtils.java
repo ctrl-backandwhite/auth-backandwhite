@@ -1,5 +1,6 @@
 package com.backandwhite.core.domain.utils;
 
+import com.backandwhite.core.domain.exception.BadRequestException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -13,7 +14,7 @@ public class JsonUtils {
 
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Error converting object to JSON", e);
+            throw new BadRequestException("PJ10","Error converting object to JSON");
         }
     }
 }
