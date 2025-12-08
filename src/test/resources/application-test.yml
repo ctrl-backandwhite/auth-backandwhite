@@ -1,6 +1,4 @@
 spring:
-  main:
-    locale: en
   jpa:
     hibernate:
       ddl-auto: create
