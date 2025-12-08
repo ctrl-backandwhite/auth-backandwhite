@@ -10,7 +10,7 @@ on:
   push:
     branches:
       - main
-
+      - develop
 jobs:
   qodana:
     runs-on: ubuntu-latest
