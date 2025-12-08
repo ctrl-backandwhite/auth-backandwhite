@@ -5,11 +5,10 @@ on:
     branches: ["main", "develop"]
   pull_request:
     branches: ["main", "develop"]
-    types: [opened, synchronize, reopened] # Eventos explícitos para PR
+    types: [opened, synchronize, reopened]
 
 permissions:
   contents: read
-  # Permiso clave para escribir los resultados del escaneo en GitHub Code Scanning
   security-events: write
 
 jobs:
@@ -23,60 +22,58 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      ## 🧱 Configuración del Entorno Java/Maven
-      # Necesario para que Snyk pueda analizar las dependencias de pom.xml
+      # Dar permisos de ejecución al Maven Wrapper (mvnw)
+      - name: Set Execution Permissions for Maven Wrapper (mvnw)
+        run: if [ -f mvnw ]; then chmod +x mvnw; fi
+
+      # Configuración del Entorno Java/Maven
       - name: Set up Java for Maven
         uses: actions/setup-java@v4
         with:
-          java-version: '21' # Asegúrate de que esta versión coincida con tu proyecto
+          java-version: '21'
           distribution: 'temurin'
-          cache: 'maven' # Habilita el caché de Maven
+          cache: 'maven'
 
-      # 🛠️ Instalación de Dependencias
-      # Ejecutar la instalación antes de Snyk ayuda a resolver problemas de permisos y garantiza
-      # que el árbol de dependencias esté listo (soluciona el error de exit code -13).
-      - name: Install Maven Dependencies and Build
-        run: mvn install -DskipTests --batch-mode
+      # Pre-construcción de Dependencias
+      - name: Pre-build Maven Dependencies (Troubleshooting)
+        run: mvn dependency:tree -DoutputType=dot --batch-mode
 
-      ## 🛡️ Configuración de Snyk
+      # 🚨 PASO 1: Configurar Snyk CLI
       - name: Set up Snyk CLI
         uses: snyk/actions/setup@806182742461562b67788a64410098c9d9b96adb
+
+      # 🚨 PASO 2: AUTENTICACIÓN CORREGIDA (Resuelve SNYK-0005 y Hotspot de SonarQube)
+      - name: Snyk Explicit Authentication (Secure)
         env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          # Inyecta el secreto en una variable de entorno local del paso
+          SNYK_API_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        # Luego usa esa variable de entorno en el comando RUN
+        run: snyk auth $SNYK_API_TOKEN
 
-      ---
-
-      ## 🔍 Escaneos y Monitoreo
-
-      # 1. Snyk Code (Análisis de Código Estático)
+      # 1. Snyk Code
       - name: Snyk Code test and generate SARIF
         run: snyk code test --sarif > snyk-code.sarif
-        # Permite la continuidad del flujo de trabajo para cargar el SARIF
         continue-on-error: true
 
-      # 2. Snyk Open Source (Vulnerabilidades en Dependencias)
+      # 2. Snyk Open Source (Monitorea dependencias)
       - name: Snyk Open Source monitor
-        # El 'monitor' envía resultados a la plataforma Snyk
         run: snyk monitor --all-projects
+        working-directory: ./
 
-      # 3. Snyk IaC (Infraestructura como Código)
+      # 3. Snyk IaC
       - name: Snyk IaC test and report
         run: snyk iac test --report
-        # Permite la continuidad para cargar el SARIF (si Snyk IaC lo genera)
         continue-on-error: true
+        working-directory: ./
 
-      # 4. Snyk Container (Escaneo de Imagen Docker)
-      #- name: Build a Docker image
-      #  run: docker build -t your/image-to-test . # Asegúrate de que la ruta sea correcta
+      # 4. Snyk Container (Descomentado cuando sea necesario)
+      # - name: Build a Docker image
+      #   run: docker build -t your/image-to-test .
 
-      - name: Snyk Container monitor
-        run: snyk container monitor your/image-to-test --file=Dockerfile
+      # - name: Snyk Container monitor
+      #   run: snyk container monitor your/image-to-test --file=Dockerfile
 
-      ---
-
-      ## 📤 Carga de Resultados
-
-      # Carga el archivo SARIF generado por Snyk Code a GitHub Code Scanning
+      # Carga de Resultados
       - name: Upload Snyk results to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v3
         with:
