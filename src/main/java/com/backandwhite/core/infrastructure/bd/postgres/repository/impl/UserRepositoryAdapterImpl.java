@@ -53,9 +53,7 @@ public class UserRepositoryAdapterImpl implements UserRepository {
 
     @Override
     public User update(User input) {
-        UserEntity userEntityToSave = USER_ENTITY_MAPPER.toEntity(input);
-        UserEntity userEntity = userJpaRepositoryAdapter.save(userEntityToSave);
-        return USER_ENTITY_MAPPER.toDomain(userEntity);
+        return this.create(input);
     }
 
     @Override
