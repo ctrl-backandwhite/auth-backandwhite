@@ -2,6 +2,7 @@ package com.backandwhite.core.domain.utils;
 
 import com.backandwhite.core.api.dtos.in.SearchCriteria;
 import jakarta.persistence.criteria.*;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public class GenericSpecification<T> implements Specification<T> {
     }
 
     @Override
-    public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+    public Predicate toPredicate(@NotNull Root<T> root, @NotNull CriteriaQuery<?> query, @NotNull CriteriaBuilder builder) {
         if (criteriaList == null || criteriaList.isEmpty()) {
             return builder.conjunction();
         }
