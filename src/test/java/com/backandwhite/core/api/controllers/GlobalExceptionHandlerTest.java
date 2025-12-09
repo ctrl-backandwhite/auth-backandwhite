@@ -3,8 +3,6 @@ package com.backandwhite.core.api.controllers;
 import com.backandwhite.core.api.dtos.out.ErrorResponse;
 import com.backandwhite.core.domain.exception.BadRequestException;
 import com.backandwhite.core.domain.exception.EntityNotFoundException;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -101,7 +99,6 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void testHandleHttpMessageNotReadable_jsonMappingException() {
-        JsonMappingException cause = new JsonMappingException(null, "Mapping error");
         HttpMessageNotReadableException ex = new HttpMessageNotReadableException("error", null);
 
         ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleHttpMessageNotReadableException(ex);
@@ -114,7 +111,6 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void testHandleHttpMessageNotReadable_jsonParseException() {
-        JsonParseException cause = new JsonParseException(null, "Json parse error");
         HttpMessageNotReadableException ex = new HttpMessageNotReadableException("error", null);
 
         ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleHttpMessageNotReadableException(ex);
