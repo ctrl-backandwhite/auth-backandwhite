@@ -74,7 +74,7 @@ class GlobalExceptionHandlerTest {
         String message = "Falta un campo requerido";
         List<String> details = List.of("Campo 'X' obligatorio");
 
-        BadRequestException ex = new BadRequestException(code, message, details);
+        BadRequestException ex = new BadRequestException( code, message, details);
         ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleBadRequestException(ex);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -87,30 +87,6 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void testHandleHttpMessageNotReadable_noSpecificCause() {
-        HttpMessageNotReadableException ex = new HttpMessageNotReadableException("error", null);
-
-        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleHttpMessageNotReadableException(ex);
-
-        assertEquals("BR002", response.getBody().getCode());
-        assertEquals("Solicitud Inválida: Formato de cuerpo incorrecto.", response.getBody().getMessage());
-        assertEquals(List.of("El cuerpo de la solicitud (Request body) no es legible o está mal formado. Asegúrate de que el formato JSON sea válido y los tipos de datos sean correctos."), response.getBody().getDetails());
-        assertNotNull(response.getBody().getTimeStamp());
-    }
-
-    @Test
-    void testHandleHttpMessageNotReadable_jsonMappingException() {
-        HttpMessageNotReadableException ex = new HttpMessageNotReadableException("error", null);
-
-        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleHttpMessageNotReadableException(ex);
-
-        assertEquals("BR002", response.getBody().getCode());
-        assertEquals("Solicitud Inválida: Formato de cuerpo incorrecto.", response.getBody().getMessage());
-        assertEquals(List.of("El cuerpo de la solicitud (Request body) no es legible o está mal formado. Asegúrate de que el formato JSON sea válido y los tipos de datos sean correctos."), response.getBody().getDetails());
-        assertNotNull(response.getBody().getTimeStamp());
-    }
-
-    @Test
-    void testHandleHttpMessageNotReadable_jsonParseException() {
         HttpMessageNotReadableException ex = new HttpMessageNotReadableException("error", null);
 
         ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleHttpMessageNotReadableException(ex);
