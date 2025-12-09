@@ -4,6 +4,7 @@ import com.backandwhite.core.api.controllers.BaseIntegrationIT;
 import com.backandwhite.core.api.dtos.in.UserDtoIn;
 import com.backandwhite.core.api.dtos.out.ErrorResponse;
 import com.backandwhite.core.api.dtos.out.UserDtoOut;
+import com.backandwhite.core.domain.User;
 import com.backandwhite.core.infrastructure.bd.postgres.entity.UserEntity;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -137,6 +138,28 @@ public class UserProvider extends BaseIntegrationIT {
                 .lastName(LAST_NAME_TWO)
                 .email(EMAIL_TWO)
                 .phoneNumber(PHONE_NUMBER_TWO)
+                .build();
+    }
+
+    public static User getUserOne() {
+        return User.builder()
+                .id(ID_ONE)
+                .firstName(FIRST_NAME_ONE)
+                .lastName(LAST_NAME_ONE)
+                .email(EMAIL_ONE)
+                .phoneNumber(PHONE_NUMBER_ONE)
+                .password(PASSWORD_ONE)
+                .build();
+    }
+
+    public static User getUserTwo() {
+        return User.builder()
+                .id(ID_TWO)
+                .firstName(FIRST_NAME_TWO)
+                .lastName(LAST_NAME_TWO)
+                .email(EMAIL_TWO)
+                .phoneNumber(PHONE_NUMBER_TWO)
+                .password(PASSWORD_TWO)
                 .build();
     }
 
