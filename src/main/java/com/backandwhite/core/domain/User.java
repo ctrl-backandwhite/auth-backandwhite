@@ -1,12 +1,10 @@
 package com.backandwhite.core.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.With;
+import lombok.*;
 
 @With
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
