@@ -3,8 +3,6 @@ package com.backandwhite.core.api.controllers;
 import com.backandwhite.core.api.dtos.out.ErrorResponse;
 import com.backandwhite.core.domain.exception.BadRequestException;
 import com.backandwhite.core.domain.exception.EntityNotFoundException;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -76,7 +74,7 @@ class GlobalExceptionHandlerTest {
         String message = "Falta un campo requerido";
         List<String> details = List.of("Campo 'X' obligatorio");
 
-        BadRequestException ex = new BadRequestException(code, message, details);
+        BadRequestException ex = new BadRequestException( code, message, details);
         ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleBadRequestException(ex);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -89,32 +87,6 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void testHandleHttpMessageNotReadable_noSpecificCause() {
-        HttpMessageNotReadableException ex = new HttpMessageNotReadableException("error", null);
-
-        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleHttpMessageNotReadableException(ex);
-
-        assertEquals("BR002", response.getBody().getCode());
-        assertEquals("Solicitud Inválida: Formato de cuerpo incorrecto.", response.getBody().getMessage());
-        assertEquals(List.of("El cuerpo de la solicitud (Request body) no es legible o está mal formado. Asegúrate de que el formato JSON sea válido y los tipos de datos sean correctos."), response.getBody().getDetails());
-        assertNotNull(response.getBody().getTimeStamp());
-    }
-
-    @Test
-    void testHandleHttpMessageNotReadable_jsonMappingException() {
-        JsonMappingException cause = new JsonMappingException(null, "Mapping error");
-        HttpMessageNotReadableException ex = new HttpMessageNotReadableException("error", null);
-
-        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleHttpMessageNotReadableException(ex);
-
-        assertEquals("BR002", response.getBody().getCode());
-        assertEquals("Solicitud Inválida: Formato de cuerpo incorrecto.", response.getBody().getMessage());
-        assertEquals(List.of("El cuerpo de la solicitud (Request body) no es legible o está mal formado. Asegúrate de que el formato JSON sea válido y los tipos de datos sean correctos."), response.getBody().getDetails());
-        assertNotNull(response.getBody().getTimeStamp());
-    }
-
-    @Test
-    void testHandleHttpMessageNotReadable_jsonParseException() {
-        JsonParseException cause = new JsonParseException(null, "Json parse error");
         HttpMessageNotReadableException ex = new HttpMessageNotReadableException("error", null);
 
         ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleHttpMessageNotReadableException(ex);
