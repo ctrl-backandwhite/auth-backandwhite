@@ -4,7 +4,9 @@ import com.backandwhite.core.domain.User;
 import com.backandwhite.core.domain.exception.EntityNotFoundException;
 import com.backandwhite.core.domain.repository.UserRepository;
 import com.backandwhite.core.infrastructure.bd.postgres.entity.UserEntity;
+import com.backandwhite.core.infrastructure.bd.postgres.mappers.UserEntityMapper;
 import com.backandwhite.core.infrastructure.bd.postgres.repository.UserJpaRepositoryAdapter;
+import com.backandwhite.core.infrastructure.bd.postgres.utils.Util;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,30 +18,30 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.backandwhite.core.domain.exception.Messages.ENTITY_NOT_FOUND;
-import static com.backandwhite.core.infrastructure.bd.postgres.mappers.UserEntityMapper.USER_ENTITY_MAPPER;
 
 @Repository
 @AllArgsConstructor
 public class UserRepositoryAdapterImpl implements UserRepository {
 
+    private final UserEntityMapper mapper;
     private final UserJpaRepositoryAdapter userJpaRepositoryAdapter;
 
     @Override
     public User create(User input) {
-        UserEntity userEntityToSave = USER_ENTITY_MAPPER.toEntity(input);
+        UserEntity userEntityToSave = mapper.toEntity(input);
         UserEntity userEntity = userJpaRepositoryAdapter.save(userEntityToSave);
-        return USER_ENTITY_MAPPER.toDomain(userEntity);
+        return mapper.toDomain(userEntity);
     }
 
     @Override
     public List<User> findAll(Integer page, Integer size, String sort) {
 
-        Sort sorting = createSort(sort);
+        Sort sorting = Util.createSort(sort);
         Pageable pageable = PageRequest.of( Objects.nonNull(page) && page >= 0 ? page : 0,
                 Objects.nonNull(size) && size > 0 ? size : 10, sorting);
 
         Page<UserEntity> userPage = userJpaRepositoryAdapter.findAll(pageable);
-        return USER_ENTITY_MAPPER.toDomainList(userPage.getContent());
+        return mapper.toDomainList(userPage.getContent());
     }
 
     @Override
@@ -48,7 +50,7 @@ public class UserRepositoryAdapterImpl implements UserRepository {
                 .orElseThrow(() -> new EntityNotFoundException(
                         ENTITY_NOT_FOUND.getCode(),
                         String.format(ENTITY_NOT_FOUND.getMessage(), id)));
-        return USER_ENTITY_MAPPER.toDomain(userEntity);
+        return mapper.toDomain(userEntity);
     }
 
     @Override
@@ -62,22 +64,5 @@ public class UserRepositoryAdapterImpl implements UserRepository {
     }
 
 
-    private Sort createSort(String sortString) {
-        if (sortString == null || sortString.trim().isEmpty()) {
-            return Sort.unsorted();
-        }
 
-        try {
-            String[] parts = sortString.split(":");
-            String property = parts[0];
-
-            Sort.Direction direction = parts.length > 1 && parts[1].equalsIgnoreCase("desc")
-                    ? Sort.Direction.DESC
-                    : Sort.Direction.ASC;
-
-            return Sort.by(direction, property);
-        } catch (Exception e) {
-            return Sort.unsorted();
-        }
-    }
 }

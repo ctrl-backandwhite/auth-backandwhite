@@ -3,14 +3,12 @@ package com.backandwhite.core.infrastructure.bd.postgres.mappers;
 import com.backandwhite.core.domain.User;
 import com.backandwhite.core.infrastructure.bd.postgres.entity.UserEntity;
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.MappingConstants;
 
 import java.util.List;
 
-@Mapper
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface UserEntityMapper {
-
-    UserEntityMapper USER_ENTITY_MAPPER = Mappers.getMapper(UserEntityMapper.class);
 
     UserEntity toEntity(User user);
 
