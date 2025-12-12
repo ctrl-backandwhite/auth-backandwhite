@@ -29,6 +29,5 @@ public class UserHandler {
                 .map( r -> roleRepository.getById(r.getId())).toList();
 
         user.setRoles(roles);
-        System.out.println(user);
     }
 }
