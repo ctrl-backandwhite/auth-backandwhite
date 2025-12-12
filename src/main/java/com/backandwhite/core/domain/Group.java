@@ -11,6 +11,7 @@ public class Group {
 
     private Long id;
     private String name;
+    private String uniqueName;
     private String description;
     private Boolean isActive;
 }

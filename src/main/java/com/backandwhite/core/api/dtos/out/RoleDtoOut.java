@@ -20,6 +20,9 @@ public class RoleDtoOut {
     @Size(max = 50, message = "El nombre del rol no debe exceder los 50 caracteres.")
     private String name;
 
+    @Schema(name = "uniqueName", example = "ROLE_ADMIN")
+    private String uniqueName;
+
     @Schema(name = "description", example = "Rol del administrado de la aplicacion.")
     @Size(max = 255, message = "La descripción no debe exceder los 255 caracteres.")
     private String description;

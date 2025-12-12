@@ -20,6 +20,9 @@ public class RoleEntity {
     @Column(name = "name", length = 30, unique = true)
     private String name;
 
+    @Column(name = "", length = 50, unique = true)
+    private String uniqueName;
+
     @Column(name = "description", length =  250)
     private String description;
 

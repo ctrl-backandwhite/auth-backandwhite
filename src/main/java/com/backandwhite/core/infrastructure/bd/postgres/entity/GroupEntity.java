@@ -1,12 +1,10 @@
 package com.backandwhite.core.infrastructure.bd.postgres.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
+@With
 @Builder
 @Entity
 @NoArgsConstructor
@@ -19,8 +17,11 @@ public class GroupEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", length = 30, unique = true)
+    @Column(name = "name", length = 30)
     private String name;
+
+    @Column(name = "", length = 50, unique = true)
+    private String uniqueName;
 
     @Column(name = "description", length =  250)
     private String description;

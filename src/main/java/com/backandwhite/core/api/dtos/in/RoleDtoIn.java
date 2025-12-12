@@ -1,8 +1,7 @@
 package com.backandwhite.core.api.dtos.in;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
 @Data
@@ -12,13 +11,15 @@ import lombok.*;
 @AllArgsConstructor
 public class RoleDtoIn {
 
+    @NotEmpty
     @Schema(name = "name", example = "ADMIN")
-    @NotBlank(message = "El nombre del rol no puede estar vacío.")
-    @Size(max = 50, message = "El nombre del rol no debe exceder los 50 caracteres.")
     private String name;
 
+    @NotEmpty
+    @Schema(name = "uniqueName", example = "ROLE_ADMIN")
+    private String uniqueName;
+
     @Schema(name = "description", example = "Rol del administrado de la aplicacio.n")
-    @Size(max = 255, message = "La descripción no debe exceder los 255 caracteres.")
     private String description;
 
     @Schema(name = "isActive", example = "true")
