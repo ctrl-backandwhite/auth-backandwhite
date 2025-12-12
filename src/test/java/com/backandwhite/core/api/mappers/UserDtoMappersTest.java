@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 class UserDtoMappersTest {
 
-    private UserDtoMappers mapper = Mappers.getMapper(UserDtoMappers.class);
+    private final UserDtoMappers mapper = Mappers.getMapper(UserDtoMappers.class);
 
     @Test
     void mapRoleIdToRole_null_returnsEmptyList() {
