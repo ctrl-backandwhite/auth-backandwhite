@@ -114,16 +114,6 @@ public class UserProvider extends BaseIntegrationIT {
                 .build();
     }
 
-    public static UserEntity getUserEntityOne() {
-        return UserEntity.builder()
-                .firstName(FIRST_NAME_ONE)
-                .lastName(LAST_NAME_ONE)
-                .email(EMAIL_ONE)
-                .phoneNumber(PHONE_NUMBER_ONE)
-                .password(PASSWORD_ONE)
-                .build();
-    }
-
     public static User getUserOne() {
         return User.builder()
                 .id(ID_ONE)
@@ -143,6 +133,16 @@ public class UserProvider extends BaseIntegrationIT {
                 .email(EMAIL_TWO)
                 .phoneNumber(PHONE_NUMBER_TWO)
                 .password(PASSWORD_TWO)
+                .build();
+    }
+
+    public static UserEntity getUserEntityOne() {
+        return UserEntity.builder()
+                .firstName(FIRST_NAME_ONE)
+                .lastName(LAST_NAME_ONE)
+                .email(EMAIL_ONE)
+                .phoneNumber(PHONE_NUMBER_ONE)
+                .password(PASSWORD_ONE)
                 .build();
     }
 
