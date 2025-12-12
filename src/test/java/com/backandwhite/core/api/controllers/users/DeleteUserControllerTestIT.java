@@ -29,7 +29,7 @@ class DeleteUserControllerTestIT extends UserProvider {
     }
 
     @ParameterizedTest
-    @MethodSource("recordNotFound")
+    @MethodSource("userRecordNotFound")
     void delete_user_by_id_not_found(Long expectedId, ErrorResponse expectedErrorResponse) {
 
         ErrorResponse response = webTestClient.delete()

@@ -28,6 +28,8 @@ public class UserProvider extends BaseIntegrationIT {
     public static final String PHONE_NUMBER_TWO = "+34-666-7777";
     public static final String PASSWORD_TWO = "abcdef12345";
 
+    public static final String USER_RECORDE_NOT_FOUND_WITH_ID_3000 = "No se ha encontrado el usuario con id 3000";
+
     /**
      * Create users
      */
@@ -71,6 +73,15 @@ public class UserProvider extends BaseIntegrationIT {
     static Stream<Arguments> updateUsers() {
         return Stream.of(
                 Arguments.of(ID_ONE, getUserDtoInOne(), getUserDtoOutOne())
+        );
+    }
+
+    /**
+     * Record not found
+     * */
+    static Stream<Arguments> userRecordNotFound() {
+        return Stream.of(
+                Arguments.of(ID_3000, getErrorResponse(NF_001, USER_RECORDE_NOT_FOUND_WITH_ID_3000))
         );
     }
 

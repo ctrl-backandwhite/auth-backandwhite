@@ -41,7 +41,7 @@ class UpdateUserControllerTestIT extends UserProvider {
     }
 
     @ParameterizedTest
-    @MethodSource("recordNotFound")
+    @MethodSource("userRecordNotFound")
     void update_user(Long id, ErrorResponse errorResponseExpected) {
 
         ErrorResponse errorResponse = webTestClient.put()

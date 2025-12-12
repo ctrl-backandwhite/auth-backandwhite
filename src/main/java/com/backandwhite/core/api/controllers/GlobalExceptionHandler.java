@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -75,28 +74,35 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
 
         String detailMessage = RESTRICCION_DE_LA_BASE_DE_DATOS;
-        String rootCause = Objects.nonNull(ex.getRootCause()) ? ex.getRootCause().getMessage() : ex.getMessage();
 
-        if (Objects.nonNull(rootCause) && rootCause.toLowerCase().contains(DUPLICATE_KEY)) {
+        String rootCause = (ex.getRootCause() != null) ? ex.getRootCause().getMessage() : ex.getMessage();
+        String safeRootCause = (rootCause == null || rootCause.isBlank())
+                ? "No se recibió detalle adicional del error."
+                : rootCause;
+
+        if (safeRootCause.toLowerCase().contains(DUPLICATE_KEY)) {
+
             ErrorResponse errorResponse = ErrorResponse.builder()
                     .code(BR_003)
                     .message(RECURSO_YA_EXISTE)
-                    .details(List.of(rootCause))
+                    .details(List.of(safeRootCause))
                     .timeStamp(ZonedDateTime.now())
                     .build();
+
             return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
         }
 
-        if (Objects.nonNull(rootCause) && rootCause.toLowerCase().contains(CANNOT_BE_NULL)) {
+        if (safeRootCause.toLowerCase().contains(CANNOT_BE_NULL)) {
             detailMessage = PUEDEN_SER_NULOS_Y_NO_FUERON_PROPORCIONADOS;
         }
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .code(BR_001)
                 .message(ERROR_DE_INTEGRIDAD_DE_DATOS)
-                .details(List.of(detailMessage, rootCause))
+                .details(List.of(detailMessage, safeRootCause))
                 .timeStamp(ZonedDateTime.now())
                 .build();
+
         return ResponseEntity.badRequest().body(errorResponse);
     }
 

@@ -20,16 +20,6 @@ public class Provider {
     public static final String NF_001 = "NF001";
     public static final Boolean IS_ACTIVE = true;
     public static final String IS_NOT_EMPTY = "no debe estar vacío";
-    public static final String RECORDE_NOT_FOUND_WITH_ID_3000 = "No se ha encontrado el registro con id 3000";
-
-    /**
-    * Record not found
-    * */
-    static Stream<Arguments> recordNotFound() {
-        return Stream.of(
-                Arguments.of(ID_3000, getErrorResponse(NF_001, RECORDE_NOT_FOUND_WITH_ID_3000))
-        );
-    }
 
     public static ErrorResponse getErrorResponse(String code, String message) {
         return ErrorResponse.builder()

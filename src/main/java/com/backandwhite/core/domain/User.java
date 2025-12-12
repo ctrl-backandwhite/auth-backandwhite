@@ -2,6 +2,8 @@ package com.backandwhite.core.domain;
 
 import lombok.*;
 
+import java.util.List;
+
 @With
 @Data
 @Builder
@@ -15,4 +17,5 @@ public class User {
     private String email;
     private String phoneNumber;
     private String password;
+    List<Role> roles;
 }

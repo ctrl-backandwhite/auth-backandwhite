@@ -24,6 +24,8 @@ public class GroupProvider extends BaseIntegrationIT {
     public static final String GROUP_ADMIN = "GROUP_ADMIN";
     public static final String DESCRIPTION_TWO = "Grupo de admin.";
 
+    public static final String GROUP_RECORDE_NOT_FOUND_WITH_ID_3000 = "No se ha encontrado el grupo con id 3000";
+
     /**
      * Create Group
      */
@@ -65,6 +67,15 @@ public class GroupProvider extends BaseIntegrationIT {
     static Stream<Arguments> updateGroupOk() {
         return Stream.of(
                 Arguments.of(ID_ONE, getGroupEntityOne(), getGroupDtoOutTwo().withId(ID_ONE))
+        );
+    }
+
+    /**
+     * Record not found
+     * */
+    static Stream<Arguments> groupRecordNotFound() {
+        return Stream.of(
+                Arguments.of(ID_3000, getErrorResponse(NF_001, GROUP_RECORDE_NOT_FOUND_WITH_ID_3000))
         );
     }
 

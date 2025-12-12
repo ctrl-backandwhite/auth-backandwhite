@@ -36,7 +36,7 @@ class GetGroupControllerTestIT extends GroupProvider {
     }
 
     @ParameterizedTest
-    @MethodSource("recordNotFound")
+    @MethodSource("groupRecordNotFound")
     void get_group_not_found(Long id,  ErrorResponse expectedError) {
 
         ErrorResponse errorResponse = webTestClient

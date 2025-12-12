@@ -110,4 +110,84 @@ class GlobalExceptionHandlerTest {
         assertEquals(List.of(root.getMessage()), response.getBody().getDetails());
         assertNotNull(response.getBody().getTimeStamp());
     }
+
+    @Test
+    void testHandleDataIntegrityViolation_cannotBeNull() {
+
+        Throwable root = new RuntimeException("field cannot be null");
+        DataIntegrityViolationException ex = new DataIntegrityViolationException("error", root);
+
+        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleDataIntegrityViolationException(ex);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("BR001", response.getBody().getCode());
+        assertEquals("Error de Integridad de Datos.", response.getBody().getMessage());
+
+        assertEquals(
+                List.of(
+                        "Uno o más campos obligatorios no pueden ser nulos y no fueron proporcionados.",
+                        root.getMessage()
+                ),
+                response.getBody().getDetails()
+        );
+    }
+
+    @Test
+    void testHandleDataIntegrityViolation_rootCauseEmptyString() {
+
+        Throwable root = new RuntimeException("");
+        DataIntegrityViolationException ex = new DataIntegrityViolationException("error", root);
+
+        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleDataIntegrityViolationException(ex);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("BR001", response.getBody().getCode());
+        assertEquals("Error de Integridad de Datos.", response.getBody().getMessage());
+
+        assertEquals(
+                List.of(
+                        "Error de integridad de datos. La operación viola una restricción de la base de datos.",
+                        "No se recibió detalle adicional del error."
+                ),
+                response.getBody().getDetails()
+        );
+    }
+
+    @Test
+    void testHandleDataIntegrityViolation_rootCauseNull() {
+
+        DataIntegrityViolationException ex = new DataIntegrityViolationException("error", null);
+
+        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleDataIntegrityViolationException(ex);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("BR001", response.getBody().getCode());
+        assertEquals("Error de Integridad de Datos.", response.getBody().getMessage());
+
+        assertEquals(
+                List.of("Error de integridad de datos. La operación viola una restricción de la base de datos.", "error"),
+                response.getBody().getDetails()
+        );
+    }
+
+    @Test
+    void testHandleDataIntegrityViolation_generic() {
+
+        Throwable root = new RuntimeException("other DB constraint violation");
+        DataIntegrityViolationException ex = new DataIntegrityViolationException("error", root);
+
+        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleDataIntegrityViolationException(ex);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("BR001", response.getBody().getCode());
+        assertEquals("Error de Integridad de Datos.", response.getBody().getMessage());
+
+        assertEquals(
+                List.of(
+                        "Error de integridad de datos. La operación viola una restricción de la base de datos.",
+                        "other DB constraint violation"
+                ),
+                response.getBody().getDetails()
+        );
+    }
 }

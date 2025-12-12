@@ -32,7 +32,7 @@ class DeleteRoleControllerTestIT extends RoleProvider {
     }
 
     @ParameterizedTest
-    @MethodSource("recordNotFound")
+    @MethodSource("roleRecordNotFound")
     void delete_role_not_found(Long id, ErrorResponse errorResponseExpected) {
 
         ErrorResponse errorResponse = webTestClient.delete()
