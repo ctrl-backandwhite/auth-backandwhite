@@ -6,6 +6,7 @@ import com.backandwhite.core.domain.repository.UserRepository;
 import com.backandwhite.core.infrastructure.bd.postgres.entity.UserEntity;
 import com.backandwhite.core.infrastructure.bd.postgres.mappers.UserEntityMapper;
 import com.backandwhite.core.infrastructure.bd.postgres.repository.UserJpaRepositoryAdapter;
+import com.backandwhite.core.infrastructure.bd.postgres.utils.Util;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,7 +36,7 @@ public class UserRepositoryAdapterImpl implements UserRepository {
     @Override
     public List<User> findAll(Integer page, Integer size, String sort) {
 
-        Sort sorting = createSort(sort);
+        Sort sorting = Util.createSort(sort);
         Pageable pageable = PageRequest.of( Objects.nonNull(page) && page >= 0 ? page : 0,
                 Objects.nonNull(size) && size > 0 ? size : 10, sorting);
 
@@ -63,22 +64,5 @@ public class UserRepositoryAdapterImpl implements UserRepository {
     }
 
 
-    private Sort createSort(String sortString) {
-        if (sortString == null || sortString.trim().isEmpty()) {
-            return Sort.unsorted();
-        }
 
-        try {
-            String[] parts = sortString.split(":");
-            String property = parts[0];
-
-            Sort.Direction direction = parts.length > 1 && parts[1].equalsIgnoreCase("desc")
-                    ? Sort.Direction.DESC
-                    : Sort.Direction.ASC;
-
-            return Sort.by(direction, property);
-        } catch (Exception e) {
-            return Sort.unsorted();
-        }
-    }
 }
