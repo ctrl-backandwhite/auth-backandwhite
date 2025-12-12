@@ -25,6 +25,8 @@ public class RoleProvider extends BaseIntegrationIT {
     public static final String ROEL_ADMIN = "ADMIN";
     public static final String DESCRIPTION_TWO = "Rol administrador.";
 
+    public static final String ROLE_RECORDE_NOT_FOUND_WITH_ID_3000 = "No se ha encontrado el rol con id 3000";
+
     /**
      * Create role
      */
@@ -75,6 +77,15 @@ public class RoleProvider extends BaseIntegrationIT {
     static Stream<Arguments> updateRoleOk() {
         return Stream.of(
                 Arguments.of(ID_ONE, getRoleEntityOne(), getRoleDtoInTwo(), getRoleDtoOutTwo().withId(ID_ONE))
+        );
+    }
+
+    /**
+     * Record not found
+     * */
+    static Stream<Arguments> roleRecordNotFound() {
+        return Stream.of(
+                Arguments.of(ID_3000, getErrorResponse(NF_001, ROLE_RECORDE_NOT_FOUND_WITH_ID_3000))
         );
     }
 

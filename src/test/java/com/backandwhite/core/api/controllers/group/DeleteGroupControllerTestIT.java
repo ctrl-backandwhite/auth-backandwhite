@@ -32,7 +32,7 @@ class DeleteGroupControllerTestIT extends GroupProvider {
     }
 
     @ParameterizedTest
-    @MethodSource("recordNotFound")
+    @MethodSource("groupRecordNotFound")
     void delete_group_by_id_not_found(Long id, ErrorResponse errorResponseExpected) {
 
         ErrorResponse response = webTestClient.delete()
