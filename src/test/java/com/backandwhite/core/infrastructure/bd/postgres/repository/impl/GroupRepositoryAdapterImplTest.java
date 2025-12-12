@@ -4,8 +4,11 @@ import com.backandwhite.core.domain.Group;
 import com.backandwhite.core.infrastructure.bd.postgres.entity.GroupEntity;
 import com.backandwhite.core.infrastructure.bd.postgres.mappers.GroupEntityMapper;
 import com.backandwhite.core.infrastructure.bd.postgres.repository.GroupJpaRepositoryAdapter;
+import com.backandwhite.core.provider.Provider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -23,7 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class GroupRepositoryAdapterImplTest {
+class GroupRepositoryAdapterImplTest extends Provider {
 
     @Mock
     private GroupEntityMapper mapper;
@@ -45,24 +48,22 @@ class GroupRepositoryAdapterImplTest {
                 .isEqualTo(getGroupOne());
     }
 
-    @Test
-    void findAll() {
+    @ParameterizedTest
+    @MethodSource("findAllProvider")
+    void findAll_test(Integer page, Integer size, String sort, int expectedPage, int expectedSize, Sort expectedSort) {
 
-        int page = 1;
-        int size = 10;
-        String sort = "desc";
+        Pageable expectedPageable = PageRequest.of(expectedPage, expectedSize, expectedSort);
 
-        Sort sorting = Sort.by(Sort.Direction.ASC, sort);
-        Pageable pageable = PageRequest.of(page, size, sorting);
         Page<GroupEntity> mockPage = new PageImpl<>(List.of(getGroupEntityOne(), getGroupEntityTwo()));
 
-        when(groupJpaRepositoryAdapter.findAll(pageable)).thenReturn(mockPage);
-        when(mapper.toDomainList(List.of(getGroupEntityOne(), getGroupEntityTwo()))).thenReturn(List.of(getGroupOne(), getGroupTwo()));
+        when(groupJpaRepositoryAdapter.findAll(expectedPageable)).thenReturn(mockPage);
+        when(mapper.toDomainList(List.of(getGroupEntityOne(), getGroupEntityTwo())))
+                .thenReturn(List.of(getGroupOne(), getGroupTwo()));
 
-        List<Group> groups = groupRepositoryAdapterImpl.findAll(page, size, sort);
+        List<Group> result = groupRepositoryAdapterImpl.findAll(page, size, sort);
 
-        assertFalse(groups.isEmpty());
-        assertThat(groups).usingRecursiveComparison()
+        assertFalse(result.isEmpty());
+        assertThat(result).usingRecursiveComparison()
                 .isEqualTo(List.of(getGroupOne(), getGroupTwo()));
     }
 

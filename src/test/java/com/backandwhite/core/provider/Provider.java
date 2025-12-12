@@ -4,6 +4,7 @@ import com.backandwhite.core.api.dtos.out.ErrorResponse;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import org.junit.jupiter.params.provider.Arguments;
+import org.springframework.data.domain.Sort;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -37,5 +38,34 @@ public class Provider {
                 .details(new ArrayList<>())
                 .timeStamp(ZonedDateTime.now())
                 .build();
+    }
+
+    static Stream<Arguments> findAllProvider() {
+        return Stream.of(
+                Arguments.of(
+                        1, 10, "id",
+                        1, 10, Sort.by(Sort.Direction.ASC, "id")
+                ),
+
+                Arguments.of(
+                        null, 10, "id",
+                        0, 10, Sort.by(Sort.Direction.ASC, "id")
+                ),
+
+                Arguments.of(
+                        1, 0, "id",
+                        1, 10, Sort.by(Sort.Direction.ASC, "id")
+                ),
+
+                Arguments.of(
+                        0, 10, "id:desc",
+                        0, 10, Sort.by(Sort.Direction.DESC, "id")
+                ),
+
+                Arguments.of(
+                        0, 10, null,
+                        0, 10, Sort.unsorted()
+                )
+        );
     }
 }

@@ -4,8 +4,11 @@ import com.backandwhite.core.domain.Role;
 import com.backandwhite.core.infrastructure.bd.postgres.entity.RoleEntity;
 import com.backandwhite.core.infrastructure.bd.postgres.mappers.RoleEntityMapper;
 import com.backandwhite.core.infrastructure.bd.postgres.repository.RoleJpaRepositoryAdapter;
+import com.backandwhite.core.provider.Provider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -23,7 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class RoleRepositoryAdapterImplTest {
+class RoleRepositoryAdapterImplTest extends Provider {
 
     @Mock
     private RoleEntityMapper mapper;
@@ -46,26 +49,28 @@ class RoleRepositoryAdapterImplTest {
                 .isEqualTo(getRoleOne());
     }
 
-    @Test
-    void findAll() {
+    @ParameterizedTest
+    @MethodSource("findAllProvider")
+    void findAll_test(Integer page, Integer size, String sort, int expectedPage, int expectedSize, Sort expectedSort) {
 
-        int page = 1;
-        int size = 10;
-        String sort = "desc";
+        Pageable expectedPageable = PageRequest.of(expectedPage, expectedSize, expectedSort);
 
-        Sort sorting = Sort.by(Sort.Direction.ASC, sort);
-        Pageable pageable = PageRequest.of(page, size, sorting);
-        Page<RoleEntity> mockPage = new PageImpl<>(List.of(getRoleEntityOne(), getRoleEntityTwo()));
+        Page<RoleEntity> mockPage =
+                new PageImpl<>(List.of(getRoleEntityOne(), getRoleEntityTwo()));
 
-        when(roleJpaRepositoryAdapter.findAll(pageable)).thenReturn(mockPage);
-        when(mapper.toDomainList(List.of(getRoleEntityOne(), getRoleEntityTwo()))).thenReturn(List.of(getRoleOne(), getRoleTwo()));
+        when(roleJpaRepositoryAdapter.findAll(expectedPageable))
+                .thenReturn(mockPage);
 
-        List<Role> roles = roleRepositoryAdapterImpl.findAll(page, size, sort);
+        when(mapper.toDomainList(List.of(getRoleEntityOne(), getRoleEntityTwo())))
+                .thenReturn(List.of(getRoleOne(), getRoleTwo()));
 
-        assertFalse(roles.isEmpty());
-        assertThat(roles).usingRecursiveComparison()
+        List<Role> result = roleRepositoryAdapterImpl.findAll(page, size, sort);
+
+        assertFalse(result.isEmpty());
+        assertThat(result).usingRecursiveComparison()
                 .isEqualTo(List.of(getRoleOne(), getRoleTwo()));
     }
+
 
     @Test
     void getById() {
