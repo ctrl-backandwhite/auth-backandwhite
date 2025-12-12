@@ -1,27 +1,30 @@
-package com.backandwhite.core.api.controllers.users;
+package com.backandwhite.core.api.controllers.group;
 
 import com.backandwhite.core.api.dtos.out.ErrorResponse;
-import com.backandwhite.core.infrastructure.bd.postgres.repository.UserJpaRepositoryAdapter;
-import com.backandwhite.core.provider.user.UserProvider;
+import com.backandwhite.core.infrastructure.bd.postgres.entity.GroupEntity;
+import com.backandwhite.core.infrastructure.bd.postgres.repository.GroupJpaRepositoryAdapter;
+import com.backandwhite.core.provider.group.GroupProvider;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-class DeleteUserControllerTestIT extends UserProvider {
+class DeleteGroupControllerTestIT extends GroupProvider {
 
     @Autowired
-    private UserJpaRepositoryAdapter userJpaRepositoryAdapter;
+    private GroupJpaRepositoryAdapter repositoryAdapter;
 
     @ParameterizedTest
-    @MethodSource("deleteUserProvider")
-    void delete_By_Id_successfully(Long expectedId) {
+    @MethodSource("deleteByIdOk")
+    void delete_by_id(Long id, GroupEntity groupEntity) {
 
-        userJpaRepositoryAdapter.save(getUserEntityOne());
+        repositoryAdapter.save(groupEntity);
 
         webTestClient.delete()
-                .uri(V1_USERS + "/{id}", expectedId)
+                .uri(GROUP_BASE_URL + "/{id}", id)
+                .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isNoContent()
                 .expectBody()
@@ -30,10 +33,10 @@ class DeleteUserControllerTestIT extends UserProvider {
 
     @ParameterizedTest
     @MethodSource("recordNotFound")
-    void delete_user_by_id_not_found(Long expectedId, ErrorResponse expectedErrorResponse) {
+    void delete_group_by_id_not_found(Long id, ErrorResponse errorResponseExpected) {
 
         ErrorResponse response = webTestClient.delete()
-                .uri(V1_USERS + "/{id}", expectedId)
+                .uri(GROUP_BASE_URL + "/{id}", id)
                 .exchange()
                 .expectStatus().isNotFound()
                 .expectBody(ErrorResponse.class)
@@ -43,6 +46,6 @@ class DeleteUserControllerTestIT extends UserProvider {
         assertThat(response)
                 .usingRecursiveComparison()
                 .ignoringFields("timeStamp")
-                .isEqualTo(expectedErrorResponse);
+                .isEqualTo(errorResponseExpected);
     }
 }

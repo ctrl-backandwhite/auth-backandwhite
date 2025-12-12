@@ -4,14 +4,12 @@ import com.backandwhite.core.api.dtos.in.UserDtoIn;
 import com.backandwhite.core.api.dtos.out.UserDtoOut;
 import com.backandwhite.core.domain.User;
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.MappingConstants;
 
 import java.util.List;
 
-@Mapper
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface UserDtoMappers {
-
-    UserDtoMappers USER_DTO_MAPPERS = Mappers.getMapper(UserDtoMappers.class);
 
     UserDtoOut toDtoOut(User user);
 

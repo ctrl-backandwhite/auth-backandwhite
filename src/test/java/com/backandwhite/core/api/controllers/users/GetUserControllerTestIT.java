@@ -40,7 +40,7 @@ class GetUserControllerTestIT extends UserProvider {
     }
 
     @ParameterizedTest
-    @MethodSource("getUserByIdProviderNotFound")
+    @MethodSource("recordNotFound")
     void get_user_by_id_not_foud(Long expectedId, ErrorResponse expectedErrorResponse) {
 
         ErrorResponse response = webTestClient

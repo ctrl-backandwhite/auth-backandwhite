@@ -41,13 +41,13 @@ class UpdateUserControllerTestIT extends UserProvider {
     }
 
     @ParameterizedTest
-    @MethodSource("updateUserNotFound")
-    void update_user(Long id, UserDtoIn userDtoIn, ErrorResponse errorResponseExpected) {
+    @MethodSource("recordNotFound")
+    void update_user(Long id, ErrorResponse errorResponseExpected) {
 
         ErrorResponse errorResponse = webTestClient.put()
                 .uri(V1_USERS + "/{id}", id)
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(userDtoIn)
+                .bodyValue(getUserDtoInOne())
                 .exchange()
                 .expectStatus().isNotFound()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)

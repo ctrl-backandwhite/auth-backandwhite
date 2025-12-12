@@ -4,8 +4,11 @@ import com.backandwhite.core.domain.User;
 import com.backandwhite.core.infrastructure.bd.postgres.entity.UserEntity;
 import com.backandwhite.core.infrastructure.bd.postgres.mappers.UserEntityMapper;
 import com.backandwhite.core.infrastructure.bd.postgres.repository.UserJpaRepositoryAdapter;
+import com.backandwhite.core.provider.Provider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -20,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class UserRepositoryAdapterImplTest {
+class UserRepositoryAdapterImplTest extends Provider {
 
     @Mock
     private UserJpaRepositoryAdapter userJpaRepositoryAdapter;
@@ -49,37 +52,40 @@ class UserRepositoryAdapterImplTest {
         verify(userEntityMapper).toDomain(getUserEntityOne().withId(1L));
     }
 
-    @Test
-    void findAll() {
+    @ParameterizedTest
+    @MethodSource("findAllProvider")
+    void findAll_test(Integer page,
+                      Integer size,
+                      String sortBy,
+                      int expectedPage,
+                      int expectedSize,
+                      Sort expectedSort) {
 
-        final int page = 1;
-        final int size = 10;
-        final String sortBy = "id";
-
-        Sort sort = Sort.by(Sort.Direction.ASC, sortBy);
-        Pageable pageable = PageRequest.of(page, size, sort);
+        Pageable expectedPageable = PageRequest.of(expectedPage, expectedSize, expectedSort);
 
         List<UserEntity> entityList = List.of(
                 getUserEntityOne().withId(1L),
-                getUserEntityOne().withId(2L));
+                getUserEntityOne().withId(2L)
+        );
 
         Page<UserEntity> mockPage = new PageImpl<>(entityList);
 
         List<User> expectedDomainList = List.of(
                 getUserOne(),
-                getUserOne());
+                getUserOne()
+        );
 
-        when(userJpaRepositoryAdapter.findAll(pageable)).thenReturn(mockPage);
+        when(userJpaRepositoryAdapter.findAll(expectedPageable)).thenReturn(mockPage);
         when(userEntityMapper.toDomainList(entityList)).thenReturn(expectedDomainList);
 
-        List<User> actualUserList = userRepositoryAdapterImpl.findAll(page, size, sortBy);
+        List<User> actualList = userRepositoryAdapterImpl.findAll(page, size, sortBy);
 
-        assertThat(actualUserList)
+        assertThat(actualList)
                 .isNotNull()
                 .usingRecursiveComparison()
                 .isEqualTo(expectedDomainList);
 
-        verify(userJpaRepositoryAdapter, times(1)).findAll(pageable);
+        verify(userJpaRepositoryAdapter, times(1)).findAll(expectedPageable);
     }
 
     @Test
@@ -116,4 +122,5 @@ class UserRepositoryAdapterImplTest {
         userRepositoryAdapterImpl.delete(1L);
         verify(userJpaRepositoryAdapter).deleteById(1L);
     }
+
 }

@@ -1,6 +1,7 @@
 package com.backandwhite.core.api.controllers;
 
 import com.backandwhite.core.TestcontainersConfiguration;
+import com.backandwhite.core.provider.Provider;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +27,7 @@ import java.util.regex.Pattern;
 @Import(TestcontainersConfiguration.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
-public class BaseIntegrationIT {
+public class BaseIntegrationIT extends Provider {
 
     protected static final String V1_USERS = "/v1/users";
     public static final String PREFIX = "hibernate_";
