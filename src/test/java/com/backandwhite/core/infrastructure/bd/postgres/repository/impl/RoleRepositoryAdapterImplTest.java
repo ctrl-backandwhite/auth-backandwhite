@@ -49,8 +49,8 @@ class RoleRepositoryAdapterImplTest {
     @Test
     void findAll() {
 
-        Integer page = 1;
-        Integer size = 10;
+        int page = 1;
+        int size = 10;
         String sort = "desc";
 
         Sort sorting = Sort.by(Sort.Direction.ASC, sort);
@@ -60,10 +60,10 @@ class RoleRepositoryAdapterImplTest {
         when(roleJpaRepositoryAdapter.findAll(pageable)).thenReturn(mockPage);
         when(mapper.toDomainList(List.of(getRoleEntityOne(), getRoleEntityTwo()))).thenReturn(List.of(getRoleOne(), getRoleTwo()));
 
-        List<Role> Roless = roleRepositoryAdapterImpl.findAll(page, size, sort);
+        List<Role> roles = roleRepositoryAdapterImpl.findAll(page, size, sort);
 
-        assertFalse(Roless.isEmpty());
-        assertThat(Roless).usingRecursiveComparison()
+        assertFalse(roles.isEmpty());
+        assertThat(roles).usingRecursiveComparison()
                 .isEqualTo(List.of(getRoleOne(), getRoleTwo()));
     }
 
@@ -73,9 +73,9 @@ class RoleRepositoryAdapterImplTest {
         when(roleJpaRepositoryAdapter.findById(1L)).thenReturn(Optional.of(getRoleEntityOne().withId(1L)));
         when(mapper.toDomain(getRoleEntityOne().withId(1L))).thenReturn(getRoleOne());
 
-        Role Role = roleRepositoryAdapterImpl.getById(1L);
+        Role role = roleRepositoryAdapterImpl.getById(1L);
 
-        assertThat(getRoleOne()).usingRecursiveComparison().isEqualTo(Role);
+        assertThat(getRoleOne()).usingRecursiveComparison().isEqualTo(role);
 
         verify(roleJpaRepositoryAdapter).findById(1L);
         verify(mapper).toDomain(getRoleEntityOne().withId(1L));
@@ -90,11 +90,11 @@ class RoleRepositoryAdapterImplTest {
         when(roleJpaRepositoryAdapter.save(getRoleEntityTwo().withId(1L))).thenReturn(getRoleEntityTwo().withId(1L));
         when(mapper.toDomain(getRoleEntityTwo().withId(1L))).thenReturn(getRoleTwo().withId(1L));
 
-        Role RoleResponse = roleRepositoryAdapterImpl.update(getRoleTwo().withId(1L));
+        Role roleResponse = roleRepositoryAdapterImpl.update(getRoleTwo().withId(1L));
 
         assertNotNull(expectedRole.withId(1L));
         assertThat(expectedRole.withId(1L)).usingRecursiveComparison()
-                .isEqualTo(RoleResponse);
+                .isEqualTo(roleResponse);
     }
 
     @Test

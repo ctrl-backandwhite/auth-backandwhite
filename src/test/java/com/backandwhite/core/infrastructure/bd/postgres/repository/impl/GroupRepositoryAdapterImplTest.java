@@ -48,8 +48,8 @@ class GroupRepositoryAdapterImplTest {
     @Test
     void findAll() {
 
-        Integer page = 1;
-        Integer size = 10;
+        int page = 1;
+        int size = 10;
         String sort = "desc";
 
         Sort sorting = Sort.by(Sort.Direction.ASC, sort);
@@ -72,9 +72,9 @@ class GroupRepositoryAdapterImplTest {
         when(groupJpaRepositoryAdapter.findById(1L)).thenReturn(Optional.of(getGroupEntityOne()));
         when(mapper.toDomain(getGroupEntityOne())).thenReturn(getGroupOne());
 
-        Group Group = groupRepositoryAdapterImpl.getById(1L);
+        Group group = groupRepositoryAdapterImpl.getById(1L);
 
-        assertThat(getGroupOne()).usingRecursiveComparison().isEqualTo(Group);
+        assertThat(getGroupOne()).usingRecursiveComparison().isEqualTo(group);
 
         verify(groupJpaRepositoryAdapter).findById(1L);
         verify(mapper).toDomain(getGroupEntityOne());
@@ -89,11 +89,11 @@ class GroupRepositoryAdapterImplTest {
         when(groupJpaRepositoryAdapter.save(getGroupEntityTwo())).thenReturn(getGroupEntityTwo());
         when(mapper.toDomain(getGroupEntityTwo())).thenReturn(getGroupTwo().withId(1L));
 
-        Group GroupResponse = groupRepositoryAdapterImpl.update(getGroupTwo().withId(1L));
+        Group groupResponse = groupRepositoryAdapterImpl.update(getGroupTwo().withId(1L));
 
         assertNotNull(expectedGroup.withId(1L));
         assertThat(expectedGroup.withId(1L)).usingRecursiveComparison()
-                .isEqualTo(GroupResponse);
+                .isEqualTo(groupResponse);
     }
 
     @Test

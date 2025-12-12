@@ -1,7 +1,10 @@
 package com.backandwhite.core.infrastructure.bd.postgres.utils;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
 
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Util {
 
     public static Sort createSort(String sortString) {

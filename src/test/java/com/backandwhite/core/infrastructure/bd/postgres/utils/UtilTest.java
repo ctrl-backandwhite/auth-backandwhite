@@ -1,61 +1,41 @@
 package com.backandwhite.core.infrastructure.bd.postgres.utils;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.data.domain.Sort;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class UtilTest {
 
-    @Test
-    void testCreateSort_null_returnsUnsorted() {
-        Sort result = Util.createSort(null);
-        assertTrue(result.isUnsorted());
+    static Stream<Arguments> sortProvider() {
+        return Stream.of(
+                Arguments.of(null, true, null, null),
+                Arguments.of("   ", true, null, null),
+                Arguments.of("name:asc", false, "name", Sort.Direction.ASC),
+                Arguments.of("age:desc", false, "age", Sort.Direction.DESC),
+                Arguments.of("email", false, "email", Sort.Direction.ASC),
+                Arguments.of(":::", true, null, null)
+        );
     }
 
-    @Test
-    void testCreateSort_emptyString_returnsUnsorted() {
-        Sort result = Util.createSort("   ");
-        assertTrue(result.isUnsorted());
-    }
+    @ParameterizedTest
+    @MethodSource("sortProvider")
+    void testCreateSort(String input, boolean expectedUnsorted, String expectedProperty, Sort.Direction expectedDirection) {
 
-    @Test
-    void testCreateSort_validAsc_returnsAscSort() {
-        Sort result = Util.createSort("name:asc");
+        Sort result = Util.createSort(input);
 
-        assertFalse(result.isUnsorted());
-        Sort.Order order = result.getOrderFor("name");
+        if (expectedUnsorted) {
+            assertTrue(result.isUnsorted());
+        } else {
+            assertFalse(result.isUnsorted());
+            Sort.Order order = result.getOrderFor(expectedProperty);
 
-        assertNotNull(order);
-        assertEquals(Sort.Direction.ASC, order.getDirection());
-    }
-
-    @Test
-    void testCreateSort_validDesc_returnsDescSort() {
-        Sort result = Util.createSort("age:desc");
-
-        assertFalse(result.isUnsorted());
-        Sort.Order order = result.getOrderFor("age");
-
-        assertNotNull(order);
-        assertEquals(Sort.Direction.DESC, order.getDirection());
-    }
-
-    @Test
-    void testCreateSort_withoutDirection_returnsAsc() {
-        Sort result = Util.createSort("email");
-
-        assertFalse(result.isUnsorted());
-        Sort.Order order = result.getOrderFor("email");
-
-        assertNotNull(order);
-        assertEquals(Sort.Direction.ASC, order.getDirection());
-    }
-
-    @Test
-    void testCreateSort_invalidFormat_returnsUnsorted() {
-        Sort result = Util.createSort(":::");
-
-        assertTrue(result.isUnsorted());
+            assertNotNull(order);
+            assertEquals(expectedDirection, order.getDirection());
+        }
     }
 }
