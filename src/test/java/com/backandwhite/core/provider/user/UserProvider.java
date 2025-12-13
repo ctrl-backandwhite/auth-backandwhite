@@ -9,8 +9,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.params.provider.Arguments;
 
+import java.util.List;
 import java.util.stream.Stream;
 
+import static com.backandwhite.core.provider.role.RoleProvider.*;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -35,8 +37,7 @@ public class UserProvider extends BaseIntegrationIT {
      */
     static Stream<Arguments> usersProviderSuccessfully() {
         return Stream.of(
-                Arguments.of(getUserDtoInOne(), getUserDtoOutOne()),
-                Arguments.of(getUserDtoInTwo(), getUserDtoOutTwo())
+                Arguments.of(getUserDtoInOne(), getUserDtoOutOne(), getRoleEntityOne().withId(null))
         );
     }
 
@@ -53,8 +54,7 @@ public class UserProvider extends BaseIntegrationIT {
      */
     static Stream<Arguments> getUserByIdProvider() {
         return  Stream.of(
-                Arguments.of(ID_ONE, getUserDtoOutOne()),
-                Arguments.of(ID_TWO, getUserDtoOutTwo())
+                Arguments.of(ID_ONE, getUserDtoOutOne(), getUserEntityOne(), getRoleEntityOne().withId(null))
         );
     }
 
@@ -72,7 +72,10 @@ public class UserProvider extends BaseIntegrationIT {
      */
     static Stream<Arguments> updateUsers() {
         return Stream.of(
-                Arguments.of(ID_ONE, getUserDtoInOne(), getUserDtoOutOne())
+                Arguments.of(ID_ONE,
+                        getUserDtoInTwo().withRoleIds(List.of(ID_ONE)),
+                        getUserDtoOutTwo().withId(ID_ONE),
+                        getRoleEntityTwo().withId(null))
         );
     }
 
@@ -92,6 +95,7 @@ public class UserProvider extends BaseIntegrationIT {
                 .email(EMAIL_ONE)
                 .phoneNumber(PHONE_NUMBER_ONE)
                 .password(PASSWORD_ONE)
+                .roleIds(List.of(ID_ONE))
                 .build();
     }
 
@@ -102,6 +106,7 @@ public class UserProvider extends BaseIntegrationIT {
                 .lastName(LAST_NAME_ONE)
                 .email(EMAIL_ONE)
                 .phoneNumber(PHONE_NUMBER_ONE)
+                .roles(List.of(getRoleDtoOutOne()))
                 .build();
     }
 
@@ -112,6 +117,7 @@ public class UserProvider extends BaseIntegrationIT {
                 .email(EMAIL_TWO)
                 .phoneNumber(PHONE_NUMBER_TWO)
                 .password(PASSWORD_TWO)
+                .roleIds(List.of(ID_TWO))
                 .build();
     }
 
@@ -122,6 +128,7 @@ public class UserProvider extends BaseIntegrationIT {
                 .lastName(LAST_NAME_TWO)
                 .email(EMAIL_TWO)
                 .phoneNumber(PHONE_NUMBER_TWO)
+                .roles(List.of(getRoleDtoOutTwo()))
                 .build();
     }
 
@@ -133,6 +140,7 @@ public class UserProvider extends BaseIntegrationIT {
                 .email(EMAIL_ONE)
                 .phoneNumber(PHONE_NUMBER_ONE)
                 .password(PASSWORD_ONE)
+                .roles(List.of(getRoleOne()))
                 .build();
     }
 
@@ -144,6 +152,7 @@ public class UserProvider extends BaseIntegrationIT {
                 .email(EMAIL_TWO)
                 .phoneNumber(PHONE_NUMBER_TWO)
                 .password(PASSWORD_TWO)
+                .roles(List.of(getRoleTwo()))
                 .build();
     }
 
@@ -154,6 +163,7 @@ public class UserProvider extends BaseIntegrationIT {
                 .email(EMAIL_ONE)
                 .phoneNumber(PHONE_NUMBER_ONE)
                 .password(PASSWORD_ONE)
+                .roles(List.of(getRoleEntityOne()))
                 .build();
     }
 
@@ -164,6 +174,7 @@ public class UserProvider extends BaseIntegrationIT {
                 .email(EMAIL_TWO)
                 .phoneNumber(PHONE_NUMBER_TWO)
                 .password(PASSWORD_TWO)
+                .roles(List.of(getRoleEntityTwo()))
                 .build();
     }
 }

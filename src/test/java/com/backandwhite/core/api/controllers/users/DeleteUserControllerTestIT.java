@@ -18,7 +18,7 @@ class DeleteUserControllerTestIT extends UserProvider {
     @MethodSource("deleteUserProvider")
     void delete_By_Id_successfully(Long expectedId) {
 
-        userJpaRepositoryAdapter.save(getUserEntityOne());
+        userJpaRepositoryAdapter.save(getUserEntityOne().withRoles(null));
 
         webTestClient.delete()
                 .uri(V1_USERS + "/{id}", expectedId)

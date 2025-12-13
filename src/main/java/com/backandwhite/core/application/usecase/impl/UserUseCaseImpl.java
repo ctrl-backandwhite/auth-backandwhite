@@ -36,6 +36,7 @@ public class UserUseCaseImpl implements UserUseCase {
     @Override
     public User update(Long id, User input) {
         User user = this.getById(id);
+        userHandler.validateUser(input);
         BeanUtils.copyProperties(input, user);
         user.setId(id);
         return userRepository.update(user);

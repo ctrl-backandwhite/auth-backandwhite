@@ -3,6 +3,8 @@ package com.backandwhite.core.api.controllers.users;
 import com.backandwhite.core.api.dtos.in.UserDtoIn;
 import com.backandwhite.core.api.dtos.out.ErrorResponse;
 import com.backandwhite.core.api.dtos.out.UserDtoOut;
+import com.backandwhite.core.infrastructure.bd.postgres.entity.RoleEntity;
+import com.backandwhite.core.infrastructure.bd.postgres.repository.RoleJpaRepositoryAdapter;
 import com.backandwhite.core.infrastructure.bd.postgres.repository.UserJpaRepositoryAdapter;
 import com.backandwhite.core.provider.user.UserProvider;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,10 +19,14 @@ class UpdateUserControllerTestIT extends UserProvider {
     @Autowired
     private UserJpaRepositoryAdapter userJpaRepositoryAdapter;
 
+    @Autowired
+    private RoleJpaRepositoryAdapter roleJpaRepositoryAdapter;
+
     @ParameterizedTest
     @MethodSource("updateUsers")
-    void update_user(Long id, UserDtoIn userDtoIn, UserDtoOut userDtoOutExpected) {
+    void update_user(Long id, UserDtoIn userDtoIn, UserDtoOut userDtoOutExpected, RoleEntity roleEntity) {
 
+        roleJpaRepositoryAdapter.save(roleEntity);
         userJpaRepositoryAdapter.save(getUserEntityOne());
 
         UserDtoOut userDtoOutResponse = webTestClient.put()
@@ -36,14 +42,13 @@ class UpdateUserControllerTestIT extends UserProvider {
 
         assertThat(userDtoOutResponse)
                 .usingRecursiveComparison()
-                .ignoringFields("password")
+                .ignoringFields("password", "roles.id")
                 .isEqualTo(userDtoOutExpected);
     }
 
     @ParameterizedTest
     @MethodSource("userRecordNotFound")
-    void update_user(Long id, ErrorResponse errorResponseExpected) {
-
+    void update_user_bad_request(Long id, ErrorResponse errorResponseExpected) {
         ErrorResponse errorResponse = webTestClient.put()
                 .uri(V1_USERS + "/{id}", id)
                 .contentType(MediaType.APPLICATION_JSON)

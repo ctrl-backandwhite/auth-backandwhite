@@ -2,14 +2,15 @@ package com.backandwhite.core.api.controllers.users;
 
 import com.backandwhite.core.api.dtos.out.ErrorResponse;
 import com.backandwhite.core.api.dtos.out.UserDtoOut;
+import com.backandwhite.core.infrastructure.bd.postgres.entity.RoleEntity;
+import com.backandwhite.core.infrastructure.bd.postgres.entity.UserEntity;
+import com.backandwhite.core.infrastructure.bd.postgres.repository.RoleJpaRepositoryAdapter;
 import com.backandwhite.core.infrastructure.bd.postgres.repository.UserJpaRepositoryAdapter;
 import com.backandwhite.core.provider.user.UserProvider;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-
-import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -18,12 +19,15 @@ class GetUserControllerTestIT extends UserProvider {
     @Autowired
     private UserJpaRepositoryAdapter userRepository;
 
+    @Autowired
+    private RoleJpaRepositoryAdapter roleJpaRepositoryAdapter;
+
     @ParameterizedTest
     @MethodSource("getUserByIdProvider")
-    void get_user_by_id(Long expectedId, UserDtoOut expectedUser) {
+    void get_user_by_id(Long expectedId, UserDtoOut expectedUser, UserEntity userEntity, RoleEntity roleEntities) {
 
-        System.out.println(expectedId);
-        userRepository.saveAll(List.of(getUserEntityOne(), getUserEntityTwo()));
+        roleJpaRepositoryAdapter.save(roleEntities);
+        userRepository.save(userEntity);
 
         UserDtoOut dtoOut = webTestClient.get()
                 .uri(V1_USERS + "/{id}", expectedId)
