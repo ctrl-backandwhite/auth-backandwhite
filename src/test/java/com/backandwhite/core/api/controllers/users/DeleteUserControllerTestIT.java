@@ -18,7 +18,7 @@ class DeleteUserControllerTestIT extends UserProvider {
     @MethodSource("deleteUserProvider")
     void delete_By_Id_successfully(Long expectedId) {
 
-        userJpaRepositoryAdapter.save(getUserEntityOne());
+        userJpaRepositoryAdapter.save(getUserEntityOne().withRoles(null));
 
         webTestClient.delete()
                 .uri(V1_USERS + "/{id}", expectedId)
@@ -29,7 +29,7 @@ class DeleteUserControllerTestIT extends UserProvider {
     }
 
     @ParameterizedTest
-    @MethodSource("recordNotFound")
+    @MethodSource("userRecordNotFound")
     void delete_user_by_id_not_found(Long expectedId, ErrorResponse expectedErrorResponse) {
 
         ErrorResponse response = webTestClient.delete()

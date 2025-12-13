@@ -38,7 +38,7 @@ class GetRoleControllerTestIT extends RoleProvider {
     }
 
     @ParameterizedTest
-    @MethodSource("recordNotFound")
+    @MethodSource("roleRecordNotFound")
     void get_role_by_id_not_found(Long id, ErrorResponse errorResponseExpected) {
 
         ErrorResponse errorResponse = webTestClient.get()

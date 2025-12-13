@@ -48,7 +48,7 @@ public class GroupRepositoryAdapterImpl implements GroupRepository {
     public Group getById(Long id) {
         GroupEntity groupEntity = groupJpaRepositoryAdapter.findById(id).orElseThrow(
                 () -> new EntityNotFoundException(ENTITY_NOT_FOUND.getCode(),
-                        String.format(ENTITY_NOT_FOUND.getMessage(), id))
+                        String.format(ENTITY_NOT_FOUND.getMessage(), "grupo", id))
         );
         return mapper.toDomain(groupEntity);
     }

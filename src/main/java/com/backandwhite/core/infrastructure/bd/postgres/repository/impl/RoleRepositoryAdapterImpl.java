@@ -49,7 +49,7 @@ public class RoleRepositoryAdapterImpl implements RoleRepository {
         RoleEntity roleEntity = roleJpaRepositoryAdapter.findById(id).orElseThrow(
                 () -> new EntityNotFoundException(
                         ENTITY_NOT_FOUND.getCode(),
-                        String.format(ENTITY_NOT_FOUND.getMessage(), id)
+                        String.format(ENTITY_NOT_FOUND.getMessage(), "rol", id)
                 ));
         return mapper.toDomain(roleEntity);
     }

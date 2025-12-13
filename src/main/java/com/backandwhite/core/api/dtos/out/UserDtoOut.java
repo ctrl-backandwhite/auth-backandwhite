@@ -3,6 +3,8 @@ package com.backandwhite.core.api.dtos.out;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+import java.util.List;
+
 @With
 @Data
 @Builder
@@ -24,4 +26,6 @@ public class UserDtoOut {
 
         @Schema(description = "Phone number of the user", example = "+1234567890")
         private String phoneNumber;
+
+        private List<RoleDtoOut> roles;
 }
