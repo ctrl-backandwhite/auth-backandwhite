@@ -1,6 +1,7 @@
 package com.backandwhite.core.infrastructure.bd.postgres.repository.impl;
 
 import com.backandwhite.core.domain.Role;
+import com.backandwhite.core.domain.exception.EntityNotFoundException;
 import com.backandwhite.core.infrastructure.bd.postgres.entity.RoleEntity;
 import com.backandwhite.core.infrastructure.bd.postgres.mappers.RoleEntityMapper;
 import com.backandwhite.core.infrastructure.bd.postgres.repository.RoleJpaRepositoryAdapter;
@@ -17,13 +18,14 @@ import org.springframework.data.domain.*;
 import java.util.List;
 import java.util.Optional;
 
+import static com.backandwhite.core.domain.exception.Messages.ENTITY_NOT_FOUND;
 import static com.backandwhite.core.provider.role.RoleProvider.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RoleRepositoryAdapterImplTest extends Provider {
@@ -85,6 +87,28 @@ class RoleRepositoryAdapterImplTest extends Provider {
         verify(roleJpaRepositoryAdapter).findById(1L);
         verify(mapper).toDomain(getRoleEntityOne().withId(1L));
     }
+
+    @Test
+    void getById_whenRoleNotFound_shouldThrowException() {
+
+        Long id = 1L;
+        when(roleJpaRepositoryAdapter.findById(id)).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> roleRepositoryAdapterImpl.getById(id))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage(
+                        String.format(
+                                ENTITY_NOT_FOUND.getMessage(),
+                                "rol",
+                                id
+                        )
+                )
+                .extracting("code")
+                .isEqualTo(ENTITY_NOT_FOUND.getCode());
+
+        verify(roleJpaRepositoryAdapter).findById(id);
+        verifyNoInteractions(mapper);
+    }
+
 
     @Test
     void update() {

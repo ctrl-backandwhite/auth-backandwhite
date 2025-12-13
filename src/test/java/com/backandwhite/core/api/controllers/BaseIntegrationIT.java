@@ -42,7 +42,7 @@ public class BaseIntegrationIT extends Provider {
 
     @BeforeEach
     @Transactional
-    public void cleanAllTables() {
+    void cleanAllTables() {
         log.info("Iniciando limpieza de todas las tablas y reiniciando IDs...");
 
         List<String> tableNames;

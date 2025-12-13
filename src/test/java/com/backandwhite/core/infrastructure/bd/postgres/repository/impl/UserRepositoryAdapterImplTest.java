@@ -1,6 +1,7 @@
 package com.backandwhite.core.infrastructure.bd.postgres.repository.impl;
 
 import com.backandwhite.core.domain.User;
+import com.backandwhite.core.domain.exception.EntityNotFoundException;
 import com.backandwhite.core.infrastructure.bd.postgres.entity.UserEntity;
 import com.backandwhite.core.infrastructure.bd.postgres.mappers.UserEntityMapper;
 import com.backandwhite.core.infrastructure.bd.postgres.repository.UserJpaRepositoryAdapter;
@@ -17,8 +18,10 @@ import org.springframework.data.domain.*;
 import java.util.List;
 import java.util.Optional;
 
+import static com.backandwhite.core.domain.exception.Messages.ENTITY_NOT_FOUND;
 import static com.backandwhite.core.provider.user.UserProvider.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
@@ -99,6 +102,28 @@ class UserRepositoryAdapterImplTest extends Provider {
 
         verify(userJpaRepositoryAdapter).findById(1L);
         verify(userEntityMapper).toDomain(getUserEntityOne().withId(1L));
+    }
+
+    @Test
+    void getById_whenUserNotFound_shouldThrowException() {
+
+        Long id = 1L;
+
+        when(userJpaRepositoryAdapter.findById(id)).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> userRepositoryAdapterImpl.getById(id))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage(
+                        String.format(
+                                ENTITY_NOT_FOUND.getMessage(),
+                                "usuario",
+                                id
+                        )
+                )
+                .extracting("code")
+                .isEqualTo(ENTITY_NOT_FOUND.getCode());
+
+        verify(userJpaRepositoryAdapter).findById(id);
+        verifyNoInteractions(userEntityMapper);
     }
 
     @Test
