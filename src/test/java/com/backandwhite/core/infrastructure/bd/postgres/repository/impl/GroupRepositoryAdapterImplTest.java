@@ -1,6 +1,7 @@
 package com.backandwhite.core.infrastructure.bd.postgres.repository.impl;
 
 import com.backandwhite.core.domain.Group;
+import com.backandwhite.core.domain.exception.EntityNotFoundException;
 import com.backandwhite.core.infrastructure.bd.postgres.entity.GroupEntity;
 import com.backandwhite.core.infrastructure.bd.postgres.mappers.GroupEntityMapper;
 import com.backandwhite.core.infrastructure.bd.postgres.repository.GroupJpaRepositoryAdapter;
@@ -17,13 +18,14 @@ import org.springframework.data.domain.*;
 import java.util.List;
 import java.util.Optional;
 
+import static com.backandwhite.core.domain.exception.Messages.ENTITY_NOT_FOUND;
 import static com.backandwhite.core.provider.group.GroupProvider.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class GroupRepositoryAdapterImplTest extends Provider {
@@ -79,6 +81,27 @@ class GroupRepositoryAdapterImplTest extends Provider {
 
         verify(groupJpaRepositoryAdapter).findById(1L);
         verify(mapper).toDomain(getGroupEntityOne());
+    }
+
+    @Test
+    void getById_whenEntityNotFound_shouldThrowException() {
+
+        Long id = 1L;
+        when(groupJpaRepositoryAdapter.findById(id)).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> groupRepositoryAdapterImpl.getById(id))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage(
+                        String.format(
+                                ENTITY_NOT_FOUND.getMessage(),
+                                "grupo",
+                                id
+                        )
+                )
+                .extracting("code")
+                .isEqualTo(ENTITY_NOT_FOUND.getCode());
+
+        verify(groupJpaRepositoryAdapter).findById(id);
+        verifyNoInteractions(mapper);
     }
 
     @Test
