@@ -184,11 +184,8 @@ class GlobalExceptionHandlerTest {
         assertEquals("BR001", response.getBody().getCode());
         assertEquals("Error de Integridad de Datos.", response.getBody().getMessage());
 
-        assertEquals(
-                List.of(
-                        "Error de integridad de datos. La operación viola una restricción de la base de datos.",
-                        "other DB constraint violation"
-                ),
+        assertEquals(List.of("Error de integridad de datos. La operación viola una restricción de la base de datos.",
+                        "other DB constraint violation"),
                 response.getBody().getDetails()
         );
     }
@@ -196,15 +193,12 @@ class GlobalExceptionHandlerTest {
     @Test
     void handlePropertyReferenceException_shouldReturnBadRequest() {
 
-        // given
         PropertyReferenceException exception =
                 Mockito.mock(PropertyReferenceException.class);
 
-        // when
         ResponseEntity<ErrorResponse> response =
                 globalExceptionHandler.handlePropertyReferenceException(exception);
 
-        // then
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 
@@ -214,8 +208,7 @@ class GlobalExceptionHandlerTest {
         assertEquals("BR002", body.getCode());
         assertEquals("La propiedad por la que intenta filtrar no existe en la entidad.", body.getMessage());
 
-        List<String> details = List.of(
-                "Revise las propiedades que tiene su entidad.",
+        List<String> details = List.of("Revise las propiedades que tiene su entidad.",
                 "Recuerde que debe informarla en este formato 'propertieName:desc' o 'propertieName:asc'.",
                 "Ejemplo: 'id:asc' o 'id:desc'.");
 
