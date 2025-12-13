@@ -6,8 +6,10 @@ import com.backandwhite.core.domain.exception.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.core.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -189,5 +191,37 @@ class GlobalExceptionHandlerTest {
                 ),
                 response.getBody().getDetails()
         );
+    }
+
+    @Test
+    void handlePropertyReferenceException_shouldReturnBadRequest() {
+
+        // given
+        PropertyReferenceException exception =
+                Mockito.mock(PropertyReferenceException.class);
+
+        // when
+        ResponseEntity<ErrorResponse> response =
+                globalExceptionHandler.handlePropertyReferenceException(exception);
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+
+        ErrorResponse body = response.getBody();
+        assertNotNull(body);
+        assertNotNull(body.getCode());
+        assertEquals("BR002", body.getCode());
+        assertEquals("La propiedad por la que intenta filtrar no existe en la entidad.", body.getMessage());
+
+        List<String> details = List.of(
+                "Revise las propiedades que tiene su entidad.",
+                "Recuerde que debe informarla en este formato 'propertieName:desc' o 'propertieName:asc'.",
+                "Ejemplo: 'id:asc' o 'id:desc'.");
+
+        assertThat(body.getDetails()).usingRecursiveComparison()
+                .isEqualTo(details);
+
+        assertThat(body.getTimeStamp()).isNotNull();
     }
 }
