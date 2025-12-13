@@ -1,6 +1,7 @@
 package com.backandwhite.core.application.usecase.impl;
 
 import com.backandwhite.core.application.usecase.UserUseCase;
+import com.backandwhite.core.application.usecase.hendler.UserHandler;
 import com.backandwhite.core.domain.User;
 import com.backandwhite.core.domain.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -13,10 +14,12 @@ import java.util.List;
 @AllArgsConstructor
 public class UserUseCaseImpl implements UserUseCase {
 
+    private final UserHandler userHandler;
     private final UserRepository userRepository;
 
     @Override
     public User create(User input) {
+        userHandler.validateUser(input);
         return userRepository.create(input);
     }
 
@@ -33,6 +36,7 @@ public class UserUseCaseImpl implements UserUseCase {
     @Override
     public User update(Long id, User input) {
         User user = this.getById(id);
+        userHandler.validateUser(input);
         BeanUtils.copyProperties(input, user);
         user.setId(id);
         return userRepository.update(user);

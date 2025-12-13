@@ -25,6 +25,8 @@ public class RoleProvider extends BaseIntegrationIT {
     public static final String ROEL_ADMIN = "ADMIN";
     public static final String DESCRIPTION_TWO = "Rol administrador.";
 
+    public static final String ROLE_RECORDE_NOT_FOUND_WITH_ID_3000 = "No se ha encontrado el rol con id 3000";
+
     /**
      * Create role
      */
@@ -47,7 +49,7 @@ public class RoleProvider extends BaseIntegrationIT {
      */
     static Stream<Arguments> deleteRoleByIdOk() {
         return Stream.of(
-                Arguments.of(ID_ONE, getRoleEntityOne())
+                Arguments.of(ID_ONE, getRoleEntityOne().withId(null))
         );
     }
 
@@ -56,7 +58,9 @@ public class RoleProvider extends BaseIntegrationIT {
      */
     static Stream<Arguments> getAllGroupsPaginated() {
         return Stream.of(
-                Arguments.of(List.of(getRoleEntityOne(), getRoleEntityTwo()), List.of(getRoleDtoOutOne(), getRoleDtoOutTwo()))
+                Arguments.of(
+                        List.of(getRoleEntityOne().withId(null), getRoleEntityTwo().withId(null)),
+                        List.of(getRoleDtoOutOne(), getRoleDtoOutTwo()))
         );
     }
 
@@ -65,7 +69,7 @@ public class RoleProvider extends BaseIntegrationIT {
      */
     static Stream<Arguments> getRoleByIdOk() {
        return Stream.of(
-         Arguments.of(ID_ONE, getRoleEntityOne(), getRoleDtoOutOne())
+         Arguments.of(ID_ONE, getRoleEntityOne().withId(null), getRoleDtoOutOne())
        );
     }
 
@@ -74,7 +78,16 @@ public class RoleProvider extends BaseIntegrationIT {
      */
     static Stream<Arguments> updateRoleOk() {
         return Stream.of(
-                Arguments.of(ID_ONE, getRoleEntityOne(), getRoleDtoInTwo(), getRoleDtoOutTwo().withId(ID_ONE))
+                Arguments.of(ID_ONE, getRoleEntityOne().withId(null), getRoleDtoInTwo(), getRoleDtoOutTwo().withId(ID_ONE))
+        );
+    }
+
+    /**
+     * Record not found
+     * */
+    static Stream<Arguments> roleRecordNotFound() {
+        return Stream.of(
+                Arguments.of(ID_3000, getErrorResponse(NF_001, ROLE_RECORDE_NOT_FOUND_WITH_ID_3000))
         );
     }
 
@@ -138,6 +151,7 @@ public class RoleProvider extends BaseIntegrationIT {
 
     public  static RoleEntity getRoleEntityOne() {
         return RoleEntity.builder()
+                .id(ID_ONE)
                 .name(DEFAULT)
                 .uniqueName(ROLE_DEFAULT)
                 .description(DESCRIPTION_ONE)
@@ -147,6 +161,7 @@ public class RoleProvider extends BaseIntegrationIT {
 
     public  static RoleEntity getRoleEntityTwo() {
         return RoleEntity.builder()
+                .id(ID_TWO)
                 .name(ADMIN)
                 .uniqueName(ROEL_ADMIN)
                 .description(DESCRIPTION_TWO)

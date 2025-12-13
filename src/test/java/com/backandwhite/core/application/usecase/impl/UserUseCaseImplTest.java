@@ -1,5 +1,6 @@
 package com.backandwhite.core.application.usecase.impl;
 
+import com.backandwhite.core.application.usecase.hendler.UserHandler;
 import com.backandwhite.core.domain.User;
 import com.backandwhite.core.domain.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,9 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserUseCaseImplTest {
+
+    @Mock
+    private UserHandler userHandler;
 
     @Mock
     private UserRepository userRepository;

@@ -3,17 +3,26 @@ package com.backandwhite.core.api.controllers.users;
 import com.backandwhite.core.api.dtos.in.UserDtoIn;
 import com.backandwhite.core.api.dtos.out.ErrorResponse;
 import com.backandwhite.core.api.dtos.out.UserDtoOut;
+import com.backandwhite.core.infrastructure.bd.postgres.entity.RoleEntity;
+import com.backandwhite.core.infrastructure.bd.postgres.repository.RoleJpaRepositoryAdapter;
 import com.backandwhite.core.provider.user.UserProvider;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 class CreateUserControllerTestIT extends UserProvider {
 
+    @Autowired
+    private RoleJpaRepositoryAdapter roleJpaRepositoryAdapter;
+
     @ParameterizedTest
     @MethodSource("usersProviderSuccessfully")
-    void create_users_successfully(UserDtoIn in, UserDtoOut expected) {
+    void create_users_successfully(UserDtoIn in, UserDtoOut expected, RoleEntity roleEntity) {
+
+        roleJpaRepositoryAdapter.save(roleEntity);
+
         UserDtoOut response =
                 webTestClient.post()
                         .uri(V1_USERS)
@@ -28,7 +37,6 @@ class CreateUserControllerTestIT extends UserProvider {
 
         Assertions.assertThat(response)
                 .usingRecursiveComparison()
-                .ignoringFields("id")
                 .isEqualTo(expected);
     }
 

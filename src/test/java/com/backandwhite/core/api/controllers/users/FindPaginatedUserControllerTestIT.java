@@ -1,6 +1,7 @@
 package com.backandwhite.core.api.controllers.users;
 
 import com.backandwhite.core.api.dtos.out.UserDtoOut;
+import com.backandwhite.core.infrastructure.bd.postgres.repository.RoleJpaRepositoryAdapter;
 import com.backandwhite.core.infrastructure.bd.postgres.repository.UserJpaRepositoryAdapter;
 import com.backandwhite.core.provider.user.UserProvider;
 import org.junit.jupiter.api.Test;
@@ -9,18 +10,23 @@ import org.springframework.http.MediaType;
 
 import java.util.List;
 
+import static com.backandwhite.core.provider.role.RoleProvider.getRoleEntityOne;
+import static com.backandwhite.core.provider.role.RoleProvider.getRoleEntityTwo;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class FindPaginatedUserControllerTestIT extends UserProvider {
+
+    @Autowired
+    private RoleJpaRepositoryAdapter roleJpaRepositoryAdapter;
 
     @Autowired
     private UserJpaRepositoryAdapter userJpaRepositoryAdapter;
 
     @Test
     void get_all_users_paginated() {
-        userJpaRepositoryAdapter.saveAll(List.of(
-                        getUserEntityOne().withId(null),
-                getUserEntityTwo().withId(null)));
+
+        roleJpaRepositoryAdapter.saveAll(List.of(getRoleEntityOne().withId(null), getRoleEntityTwo().withId(null)));
+        userJpaRepositoryAdapter.saveAll(List.of(getUserEntityOne(), getUserEntityTwo()));
 
         List<UserDtoOut> dtoOuts = webTestClient
                 .get()

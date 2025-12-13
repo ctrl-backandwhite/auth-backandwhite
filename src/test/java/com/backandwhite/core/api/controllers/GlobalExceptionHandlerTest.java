@@ -6,8 +6,10 @@ import com.backandwhite.core.domain.exception.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.core.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -109,5 +111,117 @@ class GlobalExceptionHandlerTest {
         assertEquals("El recurso ya existe.", response.getBody().getMessage());
         assertEquals(List.of(root.getMessage()), response.getBody().getDetails());
         assertNotNull(response.getBody().getTimeStamp());
+    }
+
+    @Test
+    void testHandleDataIntegrityViolation_cannotBeNull() {
+
+        Throwable root = new RuntimeException("field cannot be null");
+        DataIntegrityViolationException ex = new DataIntegrityViolationException("error", root);
+
+        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleDataIntegrityViolationException(ex);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("BR001", response.getBody().getCode());
+        assertEquals("Error de Integridad de Datos.", response.getBody().getMessage());
+
+        assertEquals(
+                List.of(
+                        "Uno o más campos obligatorios no pueden ser nulos y no fueron proporcionados.",
+                        root.getMessage()
+                ),
+                response.getBody().getDetails()
+        );
+    }
+
+    @Test
+    void testHandleDataIntegrityViolation_rootCauseEmptyString() {
+
+        Throwable root = new RuntimeException("");
+        DataIntegrityViolationException ex = new DataIntegrityViolationException("error", root);
+
+        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleDataIntegrityViolationException(ex);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("BR001", response.getBody().getCode());
+        assertEquals("Error de Integridad de Datos.", response.getBody().getMessage());
+
+        assertEquals(
+                List.of(
+                        "Error de integridad de datos. La operación viola una restricción de la base de datos.",
+                        "No se recibió detalle adicional del error."
+                ),
+                response.getBody().getDetails()
+        );
+    }
+
+    @Test
+    void testHandleDataIntegrityViolation_rootCauseNull() {
+
+        DataIntegrityViolationException ex = new DataIntegrityViolationException("error", null);
+
+        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleDataIntegrityViolationException(ex);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("BR001", response.getBody().getCode());
+        assertEquals("Error de Integridad de Datos.", response.getBody().getMessage());
+
+        assertEquals(
+                List.of("Error de integridad de datos. La operación viola una restricción de la base de datos.", "error"),
+                response.getBody().getDetails()
+        );
+    }
+
+    @Test
+    void testHandleDataIntegrityViolation_generic() {
+
+        Throwable root = new RuntimeException("other DB constraint violation");
+        DataIntegrityViolationException ex = new DataIntegrityViolationException("error", root);
+
+        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleDataIntegrityViolationException(ex);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("BR001", response.getBody().getCode());
+        assertEquals("Error de Integridad de Datos.", response.getBody().getMessage());
+
+        assertEquals(
+                List.of(
+                        "Error de integridad de datos. La operación viola una restricción de la base de datos.",
+                        "other DB constraint violation"
+                ),
+                response.getBody().getDetails()
+        );
+    }
+
+    @Test
+    void handlePropertyReferenceException_shouldReturnBadRequest() {
+
+        // given
+        PropertyReferenceException exception =
+                Mockito.mock(PropertyReferenceException.class);
+
+        // when
+        ResponseEntity<ErrorResponse> response =
+                globalExceptionHandler.handlePropertyReferenceException(exception);
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+
+        ErrorResponse body = response.getBody();
+        assertNotNull(body);
+        assertNotNull(body.getCode());
+        assertEquals("BR002", body.getCode());
+        assertEquals("La propiedad por la que intenta filtrar no existe en la entidad.", body.getMessage());
+
+        List<String> details = List.of(
+                "Revise las propiedades que tiene su entidad.",
+                "Recuerde que debe informarla en este formato 'propertieName:desc' o 'propertieName:asc'.",
+                "Ejemplo: 'id:asc' o 'id:desc'.");
+
+        assertThat(body.getDetails()).usingRecursiveComparison()
+                .isEqualTo(details);
+
+        assertThat(body.getTimeStamp()).isNotNull();
     }
 }

@@ -3,6 +3,9 @@ package com.backandwhite.core.infrastructure.bd.postgres.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @With
 @Entity
@@ -29,4 +32,6 @@ public class RoleEntity {
     @Column(name = "isActive")
     private Boolean isActive;
 
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
+    private List<UserEntity> userEntities = new ArrayList<>();
 }

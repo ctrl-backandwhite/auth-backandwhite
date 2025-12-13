@@ -40,7 +40,7 @@ class UpdateRoleControllerTestIT extends RoleProvider {
     }
 
     @ParameterizedTest
-    @MethodSource("recordNotFound")
+    @MethodSource("roleRecordNotFound")
     void update_role_ok(Long id, ErrorResponse errorResponseExpected) {
 
         ErrorResponse errorResponse = webTestClient.put()
