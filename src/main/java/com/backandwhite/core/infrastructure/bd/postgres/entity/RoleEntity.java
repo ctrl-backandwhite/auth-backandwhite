@@ -33,5 +33,5 @@ public class RoleEntity {
     private Boolean isActive;
 
     @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
-    private List<UserEntity> userEntities = new ArrayList<>();
+    private List<UserEntity> users = new ArrayList<>();
 }

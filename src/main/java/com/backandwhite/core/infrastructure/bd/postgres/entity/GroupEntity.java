@@ -3,6 +3,9 @@ package com.backandwhite.core.infrastructure.bd.postgres.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @With
 @Builder
@@ -28,5 +31,8 @@ public class GroupEntity {
 
     @Column(name = "isActive")
     private Boolean isActive;
+
+    @ManyToMany(mappedBy = "groups", fetch = FetchType.LAZY)
+    private List<UserEntity> users = new ArrayList<>();
 
 }

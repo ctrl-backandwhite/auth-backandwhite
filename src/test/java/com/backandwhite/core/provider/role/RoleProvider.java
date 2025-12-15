@@ -3,6 +3,7 @@ package com.backandwhite.core.provider.role;
 import com.backandwhite.core.api.controllers.BaseIntegrationIT;
 import com.backandwhite.core.api.dtos.in.RoleDtoIn;
 import com.backandwhite.core.api.dtos.out.RoleDtoOut;
+import com.backandwhite.core.api.dtos.out.UserRoleDtoOut;
 import com.backandwhite.core.domain.Role;
 import com.backandwhite.core.infrastructure.bd.postgres.entity.RoleEntity;
 import lombok.AccessLevel;
@@ -126,6 +127,22 @@ public class RoleProvider extends BaseIntegrationIT {
                 .uniqueName(ROEL_ADMIN)
                 .description(DESCRIPTION_TWO)
                 .isActive(IS_ACTIVE)
+                .build();
+    }
+
+    public static UserRoleDtoOut getUserRoleDtoOutOne() {
+        return UserRoleDtoOut.builder()
+                .id(ID_ONE)
+                .name(DEFAULT)
+                .uniqueName(ROLE_DEFAULT)
+                .build();
+    }
+
+    public static UserRoleDtoOut getUserRoleDtoOutTwo() {
+        return UserRoleDtoOut.builder()
+                .id(ID_TWO)
+                .name(ADMIN)
+                .uniqueName(ROEL_ADMIN)
                 .build();
     }
 
