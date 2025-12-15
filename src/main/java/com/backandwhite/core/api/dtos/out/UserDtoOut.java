@@ -1,5 +1,6 @@
 package com.backandwhite.core.api.dtos.out;
 
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -27,5 +28,9 @@ public class UserDtoOut {
         @Schema(description = "Phone number of the user", example = "+1234567890")
         private String phoneNumber;
 
-        private List<RoleDtoOut> roles;
+        @ArraySchema(schema = @Schema(implementation = UserRoleDtoOut.class))
+        private List<UserRoleDtoOut> roles;
+
+        @ArraySchema(schema = @Schema(implementation = UserGroupDtoOut.class))
+        private List<UserGroupDtoOut> groups;
 }

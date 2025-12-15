@@ -3,7 +3,9 @@ package com.backandwhite.core.api.controllers.users;
 import com.backandwhite.core.api.dtos.in.UserDtoIn;
 import com.backandwhite.core.api.dtos.out.ErrorResponse;
 import com.backandwhite.core.api.dtos.out.UserDtoOut;
+import com.backandwhite.core.infrastructure.bd.postgres.entity.GroupEntity;
 import com.backandwhite.core.infrastructure.bd.postgres.entity.RoleEntity;
+import com.backandwhite.core.infrastructure.bd.postgres.repository.GroupJpaRepositoryAdapter;
 import com.backandwhite.core.infrastructure.bd.postgres.repository.RoleJpaRepositoryAdapter;
 import com.backandwhite.core.infrastructure.bd.postgres.repository.UserJpaRepositoryAdapter;
 import com.backandwhite.core.provider.user.UserProvider;
@@ -22,10 +24,14 @@ class UpdateUserControllerTestIT extends UserProvider {
     @Autowired
     private RoleJpaRepositoryAdapter roleJpaRepositoryAdapter;
 
+    @Autowired
+    private GroupJpaRepositoryAdapter groupJpaRepositoryAdapter;
+
     @ParameterizedTest
     @MethodSource("updateUsers")
-    void update_user(Long id, UserDtoIn userDtoIn, UserDtoOut userDtoOutExpected, RoleEntity roleEntity) {
+    void update_user(Long id, UserDtoIn userDtoIn, UserDtoOut userDtoOutExpected, RoleEntity roleEntity, GroupEntity groupEntity) {
 
+        groupJpaRepositoryAdapter.save(groupEntity);
         roleJpaRepositoryAdapter.save(roleEntity);
         userJpaRepositoryAdapter.save(getUserEntityOne());
 
@@ -42,7 +48,10 @@ class UpdateUserControllerTestIT extends UserProvider {
 
         assertThat(userDtoOutResponse)
                 .usingRecursiveComparison()
-                .ignoringFields("password", "roles.id")
+                .ignoringFields(
+                        "password",
+                        "roles.id",
+                        "groups.id")
                 .isEqualTo(userDtoOutExpected);
     }
 

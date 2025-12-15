@@ -1,6 +1,10 @@
 package com.backandwhite.core.api.controllers.users;
 
 import com.backandwhite.core.api.dtos.out.ErrorResponse;
+import com.backandwhite.core.infrastructure.bd.postgres.entity.GroupEntity;
+import com.backandwhite.core.infrastructure.bd.postgres.entity.RoleEntity;
+import com.backandwhite.core.infrastructure.bd.postgres.repository.GroupJpaRepositoryAdapter;
+import com.backandwhite.core.infrastructure.bd.postgres.repository.RoleJpaRepositoryAdapter;
 import com.backandwhite.core.infrastructure.bd.postgres.repository.UserJpaRepositoryAdapter;
 import com.backandwhite.core.provider.user.UserProvider;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,11 +18,19 @@ class DeleteUserControllerTestIT extends UserProvider {
     @Autowired
     private UserJpaRepositoryAdapter userJpaRepositoryAdapter;
 
+    @Autowired
+    private RoleJpaRepositoryAdapter roleJpaRepositoryAdapter;
+
+    @Autowired
+    private GroupJpaRepositoryAdapter groupJpaRepositoryAdapter;
+
     @ParameterizedTest
     @MethodSource("deleteUserProvider")
-    void delete_By_Id_successfully(Long expectedId) {
+    void delete_By_Id_successfully(Long expectedId, RoleEntity roleEntity, GroupEntity groupEntity) {
 
-        userJpaRepositoryAdapter.save(getUserEntityOne().withRoles(null));
+        roleJpaRepositoryAdapter.save(roleEntity);
+        groupJpaRepositoryAdapter.save(groupEntity);
+        userJpaRepositoryAdapter.save(getUserEntityOne());
 
         webTestClient.delete()
                 .uri(V1_USERS + "/{id}", expectedId)

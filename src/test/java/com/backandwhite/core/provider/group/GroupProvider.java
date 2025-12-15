@@ -3,6 +3,7 @@ package com.backandwhite.core.provider.group;
 import com.backandwhite.core.api.controllers.BaseIntegrationIT;
 import com.backandwhite.core.api.dtos.in.GroupDtoIn;
 import com.backandwhite.core.api.dtos.out.GroupDtoOut;
+import com.backandwhite.core.api.dtos.out.UserGroupDtoOut;
 import com.backandwhite.core.domain.Group;
 import com.backandwhite.core.infrastructure.bd.postgres.entity.GroupEntity;
 import lombok.AccessLevel;
@@ -114,6 +115,22 @@ public class GroupProvider extends BaseIntegrationIT {
                 .uniqueName(GROUP_ADMIN)
                 .description(DESCRIPTION_TWO)
                 .isActive(IS_ACTIVE)
+                .build();
+    }
+
+    public static UserGroupDtoOut getUserGroupDtoOutOne() {
+        return UserGroupDtoOut.builder()
+                .id(ID_ONE)
+                .name(GUEST)
+                .uniqueName(GROUP_GUEST)
+                .build();
+    }
+
+    public static UserGroupDtoOut getUserGroupDtoOutTwo() {
+        return UserGroupDtoOut.builder()
+                .id(ID_TWO)
+                .name(ADMIN)
+                .uniqueName(GROUP_ADMIN)
                 .build();
     }
 
