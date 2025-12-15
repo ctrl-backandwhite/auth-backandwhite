@@ -37,4 +37,7 @@ public class UserDtoIn {
         @ArraySchema(schema = @Schema(implementation = Long.class, example = "1"))
         private List<Long> roleIds;
 
+        @ArraySchema(schema = @Schema(implementation = Long.class, example = "1"))
+        private List<Long> groupIds;
+
 }

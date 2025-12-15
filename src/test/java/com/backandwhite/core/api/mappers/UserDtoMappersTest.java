@@ -1,5 +1,6 @@
 package com.backandwhite.core.api.mappers;
 
+import com.backandwhite.core.domain.Group;
 import com.backandwhite.core.domain.Role;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,4 +44,29 @@ class UserDtoMappersTest {
         assertEquals(2L, roles.get(1).getId());
         assertEquals(3L, roles.get(2).getId());
     }
+
+    @Test
+    void mapGroupIdToGroup_null_returnsEmptyList() {
+        List<Group> groups =  mapper.mapGroupIdsToGroups(null);
+        assertNotNull(groups);
+        assertTrue(groups.isEmpty());
+    }
+
+    @Test
+    void mapGroupIdToGroup_empty_returnsEmptyList() {
+        List<Group> groups =  mapper.mapGroupIdsToGroups(List.of());
+        assertNotNull(groups);
+        assertTrue(groups.isEmpty());
+    }
+
+    @Test
+    void mapGroupIdsToGroups_is_ok() {
+        List<Group> groups = mapper.mapGroupIdsToGroups(List.of(1L, 2L, 3L));
+
+        assertNotNull(groups);
+        assertEquals(1L, groups.getFirst().getId());
+        assertEquals(2L, groups.get(1).getId());
+        assertEquals(3L, groups.getLast().getId());
+    }
+
 }

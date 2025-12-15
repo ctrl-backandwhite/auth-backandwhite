@@ -12,6 +12,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static com.backandwhite.core.provider.group.GroupProvider.*;
 import static com.backandwhite.core.provider.role.RoleProvider.*;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
@@ -37,7 +38,7 @@ public class UserProvider extends BaseIntegrationIT {
      */
     static Stream<Arguments> usersProviderSuccessfully() {
         return Stream.of(
-                Arguments.of(getUserDtoInOne(), getUserDtoOutOne(), getRoleEntityOne().withId(null))
+                Arguments.of(getUserDtoInOne(), getUserDtoOutOne(), getRoleEntityOne().withId(null), getGroupEntityOne().withId(null))
         );
     }
 
@@ -54,7 +55,7 @@ public class UserProvider extends BaseIntegrationIT {
      */
     static Stream<Arguments> getUserByIdProvider() {
         return  Stream.of(
-                Arguments.of(ID_ONE, getUserDtoOutOne(), getUserEntityOne(), getRoleEntityOne().withId(null))
+                Arguments.of(ID_ONE, getUserDtoOutOne(), getUserEntityOne(), getRoleEntityOne().withId(null), getGroupEntityOne().withId(null))
         );
     }
 
@@ -63,7 +64,7 @@ public class UserProvider extends BaseIntegrationIT {
      */
     static Stream<Arguments> deleteUserProvider() {
         return  Stream.of(
-                Arguments.of(ID_ONE)
+                Arguments.of(ID_ONE, getRoleEntityOne().withId(null), getGroupEntityOne().withId(null))
         );
     }
 
@@ -75,7 +76,10 @@ public class UserProvider extends BaseIntegrationIT {
                 Arguments.of(ID_ONE,
                         getUserDtoInTwo().withRoleIds(List.of(ID_ONE)),
                         getUserDtoOutTwo().withId(ID_ONE),
-                        getRoleEntityTwo().withId(null))
+                        getRoleEntityTwo().withId(null),
+                        getGroupEntityTwo().withId(null)
+
+                )
         );
     }
 
@@ -96,6 +100,7 @@ public class UserProvider extends BaseIntegrationIT {
                 .phoneNumber(PHONE_NUMBER_ONE)
                 .password(PASSWORD_ONE)
                 .roleIds(List.of(ID_ONE))
+                .groupIds(List.of(ID_ONE))
                 .build();
     }
 
@@ -106,7 +111,8 @@ public class UserProvider extends BaseIntegrationIT {
                 .lastName(LAST_NAME_ONE)
                 .email(EMAIL_ONE)
                 .phoneNumber(PHONE_NUMBER_ONE)
-                .roles(List.of(getRoleDtoOutOne()))
+                .roles(List.of(getUserRoleDtoOutOne()))
+                .groups(List.of(getUserGroupDtoOutOne()))
                 .build();
     }
 
@@ -118,6 +124,7 @@ public class UserProvider extends BaseIntegrationIT {
                 .phoneNumber(PHONE_NUMBER_TWO)
                 .password(PASSWORD_TWO)
                 .roleIds(List.of(ID_TWO))
+                .groupIds(List.of(ID_ONE))
                 .build();
     }
 
@@ -128,7 +135,8 @@ public class UserProvider extends BaseIntegrationIT {
                 .lastName(LAST_NAME_TWO)
                 .email(EMAIL_TWO)
                 .phoneNumber(PHONE_NUMBER_TWO)
-                .roles(List.of(getRoleDtoOutTwo()))
+                .roles(List.of(getUserRoleDtoOutTwo()))
+                .groups(List.of(getUserGroupDtoOutTwo()))
                 .build();
     }
 
@@ -164,6 +172,7 @@ public class UserProvider extends BaseIntegrationIT {
                 .phoneNumber(PHONE_NUMBER_ONE)
                 .password(PASSWORD_ONE)
                 .roles(List.of(getRoleEntityOne()))
+                .groups(List.of(getGroupEntityOne()))
                 .build();
     }
 
@@ -175,6 +184,7 @@ public class UserProvider extends BaseIntegrationIT {
                 .phoneNumber(PHONE_NUMBER_TWO)
                 .password(PASSWORD_TWO)
                 .roles(List.of(getRoleEntityTwo()))
+                .groups(List.of(getGroupEntityTwo()))
                 .build();
     }
 }

@@ -2,8 +2,10 @@ package com.backandwhite.core.api.controllers.users;
 
 import com.backandwhite.core.api.dtos.out.ErrorResponse;
 import com.backandwhite.core.api.dtos.out.UserDtoOut;
+import com.backandwhite.core.infrastructure.bd.postgres.entity.GroupEntity;
 import com.backandwhite.core.infrastructure.bd.postgres.entity.RoleEntity;
 import com.backandwhite.core.infrastructure.bd.postgres.entity.UserEntity;
+import com.backandwhite.core.infrastructure.bd.postgres.repository.GroupJpaRepositoryAdapter;
 import com.backandwhite.core.infrastructure.bd.postgres.repository.RoleJpaRepositoryAdapter;
 import com.backandwhite.core.infrastructure.bd.postgres.repository.UserJpaRepositoryAdapter;
 import com.backandwhite.core.provider.user.UserProvider;
@@ -22,10 +24,14 @@ class GetUserControllerTestIT extends UserProvider {
     @Autowired
     private RoleJpaRepositoryAdapter roleJpaRepositoryAdapter;
 
+    @Autowired
+    private GroupJpaRepositoryAdapter groupJpaRepositoryAdapter;
+
     @ParameterizedTest
     @MethodSource("getUserByIdProvider")
-    void get_user_by_id(Long expectedId, UserDtoOut expectedUser, UserEntity userEntity, RoleEntity roleEntities) {
+    void get_user_by_id(Long expectedId, UserDtoOut expectedUser, UserEntity userEntity, RoleEntity roleEntities, GroupEntity groupEntity) {
 
+        groupJpaRepositoryAdapter.save(groupEntity);
         roleJpaRepositoryAdapter.save(roleEntities);
         userRepository.save(userEntity);
 
