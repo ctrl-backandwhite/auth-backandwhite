@@ -32,30 +32,23 @@ public class Provider {
 
     static Stream<Arguments> findAllProvider() {
         return Stream.of(
-                Arguments.of(
-                        1, 10, "id",
-                        1, 10, Sort.by(Sort.Direction.ASC, "id")
-                ),
 
-                Arguments.of(
-                        null, 10, "id",
-                        0, 10, Sort.by(Sort.Direction.ASC, "id")
-                ),
+                // normales
+                Arguments.of(1, 10, "id", 1, 10, Sort.by(Sort.Direction.ASC, "id")),
+                Arguments.of(0, 10, "id:desc", 0, 10, Sort.by(Sort.Direction.DESC, "id")),
 
-                Arguments.of(
-                        1, 0, "id",
-                        1, 10, Sort.by(Sort.Direction.ASC, "id")
-                ),
+                // page
+                Arguments.of(null, 10, "id", 0, 10, Sort.by(Sort.Direction.ASC, "id")),
+                Arguments.of(-1, 10, "id", 0, 10, Sort.by(Sort.Direction.ASC, "id")),
 
-                Arguments.of(
-                        0, 10, "id:desc",
-                        0, 10, Sort.by(Sort.Direction.DESC, "id")
-                ),
+                // size
+                Arguments.of(1, 0, "id", 1, 10, Sort.by(Sort.Direction.ASC, "id")),
+                Arguments.of(1, null, "id", 1, 10, Sort.by(Sort.Direction.ASC, "id")),
 
-                Arguments.of(
-                        0, 10, null,
-                        0, 10, Sort.unsorted()
-                )
+                // sort
+                Arguments.of(0, 10, null, 0, 10, Sort.unsorted()),
+                Arguments.of(0, 10, "   ", 0, 10, Sort.unsorted()),
+                Arguments.of(0, 10, ":::", 0, 10, Sort.unsorted())
         );
     }
 }
